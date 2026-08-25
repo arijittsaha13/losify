@@ -23,16 +23,12 @@ export function GoogleAuthModal({
   const [selectedEmail, setSelectedEmail] = useState(initialEmail);
   const [selectedName, setSelectedName] = useState(initialName);
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
-  const [customEmail, setCustomEmail] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [showCustomInput, setShowCustomInput] = useState(false);
   const [error, setError] = useState<string>();
 
   useEffect(() => {
     if (isOpen) {
       setStep(1);
       setError(undefined);
-      setShowCustomInput(false);
       const existing = findUserByEmail(initialEmail);
       if (existing) {
         setSelectedName(existing.name);
@@ -50,7 +46,7 @@ export function GoogleAuthModal({
   const handleSelectAccount = (email: string, name: string) => {
     setError(undefined);
     if (!isGmailAddress(email)) {
-      setError('Only valid @gmail.com email addresses are permitted.');
+      setError('Only verified @gmail.com Google Accounts are permitted.');
       return;
     }
     const existing = findUserByEmail(email);
@@ -58,17 +54,6 @@ export function GoogleAuthModal({
     setSelectedName(existing?.name || name || email.split('@')[0]);
     setSelectedRole(existing?.role || initialRole);
     setStep(2);
-  };
-
-  const handleCustomAccountSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(undefined);
-    const trimmed = customEmail.trim().toLowerCase();
-    if (!isGmailAddress(trimmed)) {
-      setError('Only valid @gmail.com Google Accounts are allowed.');
-      return;
-    }
-    handleSelectAccount(trimmed, customName.trim() || trimmed.split('@')[0]);
   };
 
   const handleFinalSubmit = () => {
@@ -139,9 +124,8 @@ export function GoogleAuthModal({
               to continue to <strong style={{ color: '#ffffff' }}>Losify.com</strong>
             </p>
 
-            {/* Account List Card */}
+            {/* Authenticated Account Card */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '32px' }}>
-              {/* Default Account Option 1 */}
               <button
                 type="button"
                 onClick={() => handleSelectAccount(selectedEmail, selectedName)}
@@ -149,10 +133,9 @@ export function GoogleAuthModal({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '16px',
-                  padding: '16px 20px',
+                  padding: '18px 20px',
                   backgroundColor: '#1e1e1e',
                   border: 'none',
-                  borderBottom: '1px solid #2d2d2d',
                   color: '#ffffff',
                   textAlign: 'left',
                   cursor: 'pointer',
@@ -162,78 +145,15 @@ export function GoogleAuthModal({
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
               >
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
                   {selectedName.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#ffffff' }}>{selectedName}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>{selectedName}</div>
                   <div style={{ fontSize: '13px', color: '#9aa0a6' }}>{selectedEmail}</div>
                 </div>
+                <div style={{ fontSize: '12px', color: '#8ab4f8', fontWeight: 600 }}>Select →</div>
               </button>
-
-              {/* Account Option 2: Use another account */}
-              {!showCustomInput ? (
-                <button
-                  type="button"
-                  onClick={() => setShowCustomInput(true)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    padding: '16px 20px',
-                    backgroundColor: '#1e1e1e',
-                    border: 'none',
-                    color: '#e3e3e3',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    width: '100%',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
-                >
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #444444', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c4c7c5' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </div>
-                  <div style={{ fontSize: '14px', fontWeight: 500 }}>Use another account</div>
-                </button>
-              ) : (
-                <form onSubmit={handleCustomAccountSubmit} style={{ padding: '20px', backgroundColor: '#1e1e1e', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input
-                    type="email"
-                    required
-                    placeholder="Enter your @gmail.com address"
-                    value={customEmail}
-                    onChange={(e) => setCustomEmail(e.target.value)}
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121212', color: '#fff', fontSize: '14px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Full Name (optional)"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121212', color: '#fff', fontSize: '14px' }}
-                  />
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setShowCustomInput(false)}
-                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #444', background: 'transparent', color: '#ccc', cursor: 'pointer' }}
-                    >
-                      Back
-                    </button>
-                    <button
-                      type="submit"
-                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: '#3b82f6', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
-                    >
-                      Next →
-                    </button>
-                  </div>
-                </form>
-              )}
             </div>
 
             <p style={{ fontSize: '13px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '28px' }}>

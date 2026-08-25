@@ -9,9 +9,9 @@ const USERS_KEY = 'losify_registered_users';
 const CURRENT_USER_KEY = 'losify_current_user';
 
 export const DEFAULT_HOD: User & { password: string } = {
-  email: 'arijitsaha1909@gmail.com',
+  email: 'hod.losify@gmail.com',
   password: 'hodpassword123',
-  name: 'Arijit Saha (HOD)',
+  name: 'Campus HOD Admin',
   registerId: 'HOD-001',
   role: 'hod',
 };
@@ -30,7 +30,7 @@ export function isGmailAddress(email: string): boolean {
   return trimmed.endsWith('@gmail.com');
 }
 
-function initUsers(): Array<User & { password: string }> {
+export function initUsers(): Array<User & { password?: string }> {
   if (typeof window === 'undefined') return [DEFAULT_HOD, DEFAULT_STUDENT];
   try {
     const saved = localStorage.getItem(USERS_KEY);
@@ -40,14 +40,24 @@ function initUsers(): Array<User & { password: string }> {
       return initial;
     }
     const parsed = JSON.parse(saved);
-    // Ensure default HOD and Student exist in user list
     if (!parsed.some((u: any) => u.email.toLowerCase() === DEFAULT_HOD.email.toLowerCase())) {
       parsed.push(DEFAULT_HOD);
+    }
+    if (!parsed.some((u: any) => u.email.toLowerCase() === DEFAULT_STUDENT.email.toLowerCase())) {
+      parsed.push(DEFAULT_STUDENT);
     }
     return parsed;
   } catch {
     return [DEFAULT_HOD, DEFAULT_STUDENT];
   }
+}
+
+export function findUserByEmail(email: string): User | null {
+  const users = initUsers();
+  const found = users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+  if (!found) return null;
+  const { password: _, ...userNoPass } = found as any;
+  return userNoPass;
 }
 
 export function getCurrentUser(): User | null {
@@ -63,7 +73,7 @@ export function getCurrentUser(): User | null {
   }
 }
 
-export function login(email: string, pass: string): User {
+export function login(email: string, pass: string, expectedRole?: 'student' | 'hod'): User {
   const trimmedEmail = email.trim().toLowerCase();
   if (!trimmedEmail.endsWith('@gmail.com')) {
     throw new Error('Access denied: Only valid @gmail.com email addresses are allowed.');
@@ -75,6 +85,10 @@ export function login(email: string, pass: string): User {
   );
   if (!found) {
     throw new Error('Invalid credentials. If you have not registered your @gmail.com account, please Sign Up first or use Continue with Google.');
+  }
+
+  if (expectedRole && found.role !== expectedRole) {
+    throw new Error(`This account is registered as a ${found.role.toUpperCase()}. Please switch to the ${found.role === 'hod' ? 'HOD' : 'Student'} login tab.`);
   }
 
   const { password: _, ...userNoPass } = found;
@@ -98,20 +112,21 @@ export function signup(data: {
   }
 
   const users = initUsers();
-  const existing = users.find((u) => u.email.toLowerCase() === trimmedEmail);
-  if (existing) {
-    throw new Error('An account with this @gmail.com address already exists.');
-  }
+  const existingIndex = users.findIndex((u) => u.email.toLowerCase() === trimmedEmail);
 
-  const newUser: User & { password: string } = {
+  const newUser: User & { password?: string } = {
     email: trimmedEmail,
-    name: data.name.trim() || 'Student',
-    registerId: data.registerId.trim() || `STU-${Math.floor(100000 + Math.random() * 900000)}`,
+    name: data.name.trim() || (data.role === 'hod' ? 'HOD Administrator' : 'Student'),
+    registerId: data.registerId.trim() || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`),
     password: data.password,
     role: data.role || 'student',
   };
 
-  users.push(newUser);
+  if (existingIndex >= 0) {
+    users[existingIndex] = newUser;
+  } else {
+    users.push(newUser);
+  }
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
@@ -125,25 +140,91 @@ export function signup(data: {
   return userNoPass;
 }
 
-export function loginWithFirebaseUser(firebaseUser: { email?: string | null; displayName?: string | null; uid: string }): User {
+export function loginWithFirebaseUser(
+  firebaseUser: { email?: string | null; displayName?: string | null; uid: string },
+  selectedRole?: 'student' | 'hod'
+): { user: User; isNewUser: boolean } {
   const email = (firebaseUser.email || '').trim().toLowerCase();
   if (!email || !email.endsWith('@gmail.com')) {
     throw new Error('Access denied: Only verified @gmail.com Google accounts are allowed to log in.');
   }
 
+  const users = initUsers();
+  const existingUserIndex = users.findIndex((u) => u.email.toLowerCase() === email);
+
+  if (existingUserIndex >= 0) {
+    const existing = users[existingUserIndex];
+    // If role requested differs, update it or keep stored
+    if (selectedRole && existing.role !== selectedRole) {
+      existing.role = selectedRole;
+      users[existingUserIndex] = existing;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      }
+    }
+    const { password: _, ...userNoPass } = existing;
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+      window.dispatchEvent(new Event('authChange'));
+    }
+    return { user: userNoPass, isNewUser: false };
+  }
+
+  // New user signing in with Google
   const name = firebaseUser.displayName || email.split('@')[0];
-  const userObj: User = {
+  const role = selectedRole || 'student';
+  const registerId = role === 'hod'
+    ? `HOD-GGL-${firebaseUser.uid.substring(0, 4).toUpperCase()}`
+    : `STU-GGL-${firebaseUser.uid.substring(0, 4).toUpperCase()}`;
+
+  const newUser: User = {
     email,
     name,
-    registerId: `GGL-${firebaseUser.uid.substring(0, 6).toUpperCase()}`,
-    role: email === DEFAULT_HOD.email.toLowerCase() ? 'hod' : 'student',
+    registerId,
+    role,
   };
 
+  users.push(newUser);
+
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userObj));
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     window.dispatchEvent(new Event('authChange'));
   }
-  return userObj;
+
+  return { user: newUser, isNewUser: true };
+}
+
+export function completeGoogleRegistration(data: {
+  email: string;
+  name: string;
+  registerId: string;
+  role: 'student' | 'hod';
+}): User {
+  const trimmedEmail = data.email.trim().toLowerCase();
+  const users = initUsers();
+  const existingIndex = users.findIndex((u) => u.email.toLowerCase() === trimmedEmail);
+
+  const updatedUser: User = {
+    email: trimmedEmail,
+    name: data.name.trim() || (data.role === 'hod' ? 'HOD Admin' : 'Student'),
+    registerId: data.registerId.trim() || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`),
+    role: data.role,
+  };
+
+  if (existingIndex >= 0) {
+    users[existingIndex] = { ...users[existingIndex], ...updatedUser };
+  } else {
+    users.push(updatedUser);
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+    window.dispatchEvent(new Event('authChange'));
+  }
+
+  return updatedUser;
 }
 
 export function logout() {

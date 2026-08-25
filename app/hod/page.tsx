@@ -10,7 +10,7 @@ export default function Hod() {
   const [pairs, setPairs] = useState<MatchPair[]>([]);
   const [globalStats, setGlobalStats] = useState({ totalLost: 899, totalFound: 800, totalMatches: 768, accuracy: '96%' });
   const [search, setSearch] = useState('');
-  const [email, setEmail] = useState('hod@campus.edu');
+  const [email, setEmail] = useState('hod.losify@gmail.com');
   const [password, setPassword] = useState('hodpassword123');
   const [authError, setAuthError] = useState<string>();
 
@@ -36,7 +36,7 @@ export default function Hod() {
     e.preventDefault();
     setAuthError(undefined);
     try {
-      const loggedUser = login(email, password);
+      const loggedUser = login(email, password, 'hod');
       if (loggedUser.role !== 'hod') {
         throw new Error('This account does not have HOD Administrative privileges.');
       }
@@ -72,7 +72,7 @@ export default function Hod() {
             <input
               type="email"
               required
-              placeholder="e.g. hod@campus.edu"
+              placeholder="e.g. hod.losify@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -95,7 +95,7 @@ export default function Hod() {
         <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(16,52,86,0.1)' }}>
           <span className="label" style={{ fontSize: '0.78em' }}>DEFAULT HOD CREDENTIALS</span>
           <p style={{ fontSize: '0.85em', margin: '6px 0' }}>
-            <b>Email:</b> <code>hod@campus.edu</code>
+            <b>Email:</b> <code>hod.losify@gmail.com</code>
             <br />
             <b>Password:</b> <code>hodpassword123</code>
           </p>

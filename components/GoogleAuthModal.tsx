@@ -12,11 +12,11 @@ interface GoogleAuthModalProps {
 }
 
 export function deriveNameFromEmail(email: string, rawName?: string): string {
-  if (rawName && rawName.trim() && rawName !== 'Google User') {
+  if (rawName && rawName.trim() && rawName !== 'Google User' && rawName !== 'Google Account' && rawName !== 'User') {
     return rawName.trim();
   }
-  const cleanEmail = email.trim().toLowerCase();
-  if (!cleanEmail || !cleanEmail.includes('@')) return 'Google User';
+  const cleanEmail = email ? email.trim().toLowerCase() : '';
+  if (!cleanEmail || !cleanEmail.includes('@')) return 'Student User';
 
   const userPart = cleanEmail.split('@')[0];
   const parts = userPart
@@ -25,14 +25,14 @@ export function deriveNameFromEmail(email: string, rawName?: string): string {
     .trim()
     .split(/\s+/);
 
-  if (parts.length === 0 || !parts[0]) return 'Google User';
+  const cleanParts = parts.filter(p => p.length > 0);
+  if (cleanParts.length === 0) return 'Student User';
 
-  const formatted = parts
-    .filter(p => p.length > 0)
+  const formatted = cleanParts
     .map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
     .join(' ');
 
-  return formatted || 'Google User';
+  return formatted || 'Student User';
 }
 
 export function GoogleAuthModal({
@@ -62,8 +62,12 @@ export function GoogleAuthModal({
       let targetName = initialName.trim();
 
       if (!targetEmail && typeof window !== 'undefined') {
-        targetEmail = localStorage.getItem('losify_last_google_email') || 'arijittsaha1909@gmail.com';
-        targetName = localStorage.getItem('losify_last_google_name') || 'Arijit Saha';
+        targetEmail = localStorage.getItem('losify_last_google_email') || 'alexa1447as@gmail.com';
+        targetName = localStorage.getItem('losify_last_google_name') || '';
+      }
+
+      if (targetName === 'Google User' || targetName === 'Google Account') {
+        targetName = '';
       }
 
       const computedName = deriveNameFromEmail(targetEmail, targetName);
@@ -75,8 +79,9 @@ export function GoogleAuthModal({
 
       if (targetEmail) {
         const existing = findUserByEmail(targetEmail);
-        if (existing) {
+        if (existing && existing.name && existing.name !== 'Google User') {
           setSelectedName(existing.name);
+          setInputName(existing.name);
           setSelectedRole(existing.role);
         } else {
           setSelectedRole(initialRole);
@@ -95,7 +100,10 @@ export function GoogleAuthModal({
       return;
     }
     const existing = findUserByEmail(cleanEmail);
-    const finalName = existing?.name || deriveNameFromEmail(cleanEmail, nameToUse);
+    const finalName = (existing?.name && existing.name !== 'Google User') 
+      ? existing.name 
+      : deriveNameFromEmail(cleanEmail, nameToUse);
+    
     setSelectedEmail(cleanEmail);
     setSelectedName(finalName);
     setSelectedRole(existing?.role || initialRole);
@@ -103,7 +111,7 @@ export function GoogleAuthModal({
   };
 
   const handleFinalSubmit = () => {
-    const finalName = selectedName && selectedName !== 'Google User' ? selectedName : deriveNameFromEmail(selectedEmail, inputName);
+    const finalName = deriveNameFromEmail(selectedEmail, selectedName || inputName);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('losify_last_google_email', selectedEmail);
@@ -123,7 +131,7 @@ export function GoogleAuthModal({
     });
   };
 
-  const currentDisplayName = selectedName || deriveNameFromEmail(selectedEmail, inputName);
+  const currentDisplayName = deriveNameFromEmail(selectedEmail || inputEmail, selectedName || inputName);
 
   return (
     <div
@@ -180,7 +188,7 @@ export function GoogleAuthModal({
               to continue to <strong style={{ color: '#ffffff' }}>Losify.com</strong>
             </p>
 
-            {/* Google Account List Container matching Screenshot 2 */}
+            {/* Google Account List Container */}
             <div style={{ backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '32px' }}>
               {/* Account Row Item */}
               {selectedEmail && !showManualInput && (
@@ -292,7 +300,7 @@ export function GoogleAuthModal({
                       setInputName(e.target.value);
                       setSelectedName(e.target.value);
                     }}
-                    placeholder="e.g. Arijit Saha"
+                    placeholder="e.g. Alexa"
                     style={{
                       width: '100%',
                       padding: '13px 14px',
@@ -366,7 +374,7 @@ export function GoogleAuthModal({
               Sign in to Losify.com
             </h1>
 
-            {/* Selected Account Pill matching Screenshot 1 */}
+            {/* Selected Account Pill */}
             <div
               style={{
                 display: 'inline-flex',
@@ -388,7 +396,7 @@ export function GoogleAuthModal({
               <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼</span>
             </div>
 
-            {/* Permission Scopes Grid matching Screenshot 1 */}
+            {/* Permission Scopes Grid */}
             <div style={{ backgroundColor: '#181818', borderRadius: '20px', padding: '24px', border: '1px solid #2b2b2b', marginBottom: '24px' }}>
               <div style={{ fontSize: '15px', color: '#e3e3e3', fontWeight: 500, marginBottom: '20px', lineHeight: 1.4 }}>
                 Google will allow Losify.com to access this info about you
@@ -431,7 +439,7 @@ export function GoogleAuthModal({
               Review Losify.com’s <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Privacy Policy</span> and <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Terms of Service</span> to understand how Losify.com will process and protect your data. To make changes at any time, go to your Google Account. <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Learn more about Sign in with Google.</span>
             </p>
 
-            {/* Action Buttons matching Screenshot 1 */}
+            {/* Action Buttons */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #2e2e2e', paddingTop: '20px' }}>
               <button
                 type="button"

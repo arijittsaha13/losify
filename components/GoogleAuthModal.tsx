@@ -16,12 +16,12 @@ export function GoogleAuthModal({
   onClose,
   onComplete,
   initialRole = 'student',
-  initialEmail = 'arijitsaha1909@gmail.com',
-  initialName = 'Arijit Saha',
+  initialEmail = '',
+  initialName = '',
 }: GoogleAuthModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [selectedEmail, setSelectedEmail] = useState(initialEmail);
-  const [selectedName, setSelectedName] = useState(initialName);
+  const [selectedEmail, setSelectedEmail] = useState(initialEmail || 'user@gmail.com');
+  const [selectedName, setSelectedName] = useState(initialName || 'Google User');
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
   const [error, setError] = useState<string>();
 

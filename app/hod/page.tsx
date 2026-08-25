@@ -8,10 +8,10 @@ export default function Hod() {
   const [lostItems, setLostItems] = useState<Item[]>([]);
   const [foundItems, setFoundItems] = useState<Item[]>([]);
   const [pairs, setPairs] = useState<MatchPair[]>([]);
-  const [globalStats, setGlobalStats] = useState({ totalLost: 899, totalFound: 800, totalMatches: 768, accuracy: '96%' });
+  const [globalStats, setGlobalStats] = useState({ totalLost: 0, totalFound: 0, totalMatches: 0, accuracy: '100%' });
   const [search, setSearch] = useState('');
-  const [email, setEmail] = useState('hod.losify@gmail.com');
-  const [password, setPassword] = useState('hodpassword123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState<string>();
 
   const loadData = () => {
@@ -91,15 +91,6 @@ export default function Hod() {
             Log In as HOD Admin →
           </button>
         </form>
-
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(16,52,86,0.1)' }}>
-          <span className="label" style={{ fontSize: '0.78em' }}>DEFAULT HOD CREDENTIALS</span>
-          <p style={{ fontSize: '0.85em', margin: '6px 0' }}>
-            <b>Email:</b> <code>hod.losify@gmail.com</code>
-            <br />
-            <b>Password:</b> <code>hodpassword123</code>
-          </p>
-        </div>
       </main>
     );
   }
@@ -121,7 +112,7 @@ export default function Hod() {
     [String(globalStats.totalLost), 'Lost reports'],
     [String(globalStats.totalFound), 'Found reports'],
     [String(globalStats.totalMatches), 'AI matches'],
-    [String(710 + completedCount), 'Completed collections'],
+    [String(completedCount), 'Completed collections'],
   ];
 
   return (
@@ -171,8 +162,8 @@ export default function Hod() {
             <tbody>
               {filteredPairs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.5)' }}>
-                    No matched items found.
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: 'rgba(0,0,0,0.5)' }}>
+                    No pending collections found.
                   </td>
                 </tr>
               ) : (
@@ -214,29 +205,37 @@ export default function Hod() {
       <div className="grid two" style={{ marginTop: 20 }}>
         <div className="glass card">
           <h2>Recent lost reports</h2>
-          {lostItems.map((x) => (
-            <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
-              <span>
-                <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
-                <br />
-                <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
-              </span>
-              <span className="pill">{x.status}</span>
-            </p>
-          ))}
+          {lostItems.length > 0 ? (
+            lostItems.map((x) => (
+              <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
+                <span>
+                  <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
+                  <br />
+                  <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
+                </span>
+                <span className="pill">{x.status}</span>
+              </p>
+            ))
+          ) : (
+            <p className="muted" style={{ padding: '12px 0' }}>No lost reports submitted yet.</p>
+          )}
         </div>
         <div className="glass card">
           <h2>Recent found reports</h2>
-          {foundItems.map((x) => (
-            <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
-              <span>
-                <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
-                <br />
-                <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
-              </span>
-              <span className="pill">{x.status}</span>
-            </p>
-          ))}
+          {foundItems.length > 0 ? (
+            foundItems.map((x) => (
+              <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
+                <span>
+                  <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
+                  <br />
+                  <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
+                </span>
+                <span className="pill">{x.status}</span>
+              </p>
+            ))
+          ) : (
+            <p className="muted" style={{ padding: '12px 0' }}>No found reports submitted yet.</p>
+          )}
         </div>
       </div>
     </main>

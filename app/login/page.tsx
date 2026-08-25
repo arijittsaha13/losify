@@ -17,19 +17,14 @@ export default function LoginPage() {
 
   // State for Google Sign-In 2-Step Accounts Modal
   const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleModalEmail, setGoogleModalEmail] = useState('arijitsaha1909@gmail.com');
-  const [googleModalName, setGoogleModalName] = useState('Arijit Saha');
+  const [googleModalEmail, setGoogleModalEmail] = useState('');
+  const [googleModalName, setGoogleModalName] = useState('');
 
   const handleRoleSwitch = (role: 'student' | 'hod') => {
     setActiveRole(role);
     setError(undefined);
-    if (role === 'hod' && (!email || email === 'student.losify@gmail.com')) {
-      setEmail('hod.losify@gmail.com');
-      setPassword('hodpassword123');
-    } else if (role === 'student' && (!email || email === 'hod.losify@gmail.com')) {
-      setEmail('student.losify@gmail.com');
-      setPassword('student123');
-    }
+    setEmail('');
+    setPassword('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {

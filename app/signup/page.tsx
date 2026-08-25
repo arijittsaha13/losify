@@ -18,8 +18,8 @@ export default function SignupPage() {
 
   // State for Google Accounts 2-Step Sign-In Modal
   const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleModalEmail, setGoogleModalEmail] = useState('arijitsaha1909@gmail.com');
-  const [googleModalName, setGoogleModalName] = useState('Arijit Saha');
+  const [googleModalEmail, setGoogleModalEmail] = useState('');
+  const [googleModalName, setGoogleModalName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

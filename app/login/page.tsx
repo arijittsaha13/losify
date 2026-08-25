@@ -49,26 +49,8 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLoginClick = async () => {
+  const handleGoogleLoginClick = () => {
     setError(undefined);
-    const isRealFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes('Demo2026Key99');
-
-    if (isRealFirebaseConfigured) {
-      try {
-        const res = await signInWithPopup(auth, googleProvider);
-        if (res?.user && res.user.email) {
-          if (!isGmailAddress(res.user.email)) {
-            setError('Access denied: Only verified @gmail.com Google accounts are allowed.');
-            return;
-          }
-          setGoogleModalEmail(res.user.email);
-          setGoogleModalName(res.user.displayName || res.user.email.split('@')[0]);
-        }
-      } catch (err: any) {
-        console.warn('Firebase popup skipped:', err);
-      }
-    }
-
     if (typeof window !== 'undefined') {
       const savedEmail = localStorage.getItem('losify_last_google_email') || '';
       const savedName = localStorage.getItem('losify_last_google_name') || '';

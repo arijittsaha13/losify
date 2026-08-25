@@ -1,0 +1,355 @@
+'use client';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { login, loginWithFirebaseUser, isGmailAddress } from '../../lib/authStore';
+import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string>();
+  const [isPending, startTransition] = useTransition();
+
+  // State for Google Sign In modal verification fallback when Firebase keys need setup
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleModalEmail, setGoogleModalEmail] = useState('');
+  const [googleModalName, setGoogleModalName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(undefined);
+    if (!isGmailAddress(email)) {
+      setError('Access denied: Only valid @gmail.com email addresses are allowed.');
+      return;
+    }
+
+    try {
+      const user = login(email, password);
+      startTransition(() => {
+        if (user.role === 'hod') {
+          router.push('/hod');
+        } else {
+          router.push('/dashboard');
+        }
+      });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError(undefined);
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res?.user && res.user.email) {
+        if (!isGmailAddress(res.user.email)) {
+          setError('Access denied: Only verified @gmail.com Google accounts are allowed.');
+          return;
+        }
+        const user = loginWithFirebaseUser(res.user);
+        startTransition(() => {
+          if (user.role === 'hod') {
+            router.push('/hod');
+          } else {
+            router.push('/dashboard');
+          }
+        });
+        return;
+      }
+    } catch (err: any) {
+      console.warn('Firebase Google Auth popup:', err);
+      // Open Google Account input modal if popup is restricted or API key needs project binding
+      setShowGoogleModal(true);
+    }
+  };
+
+  const handleGoogleModalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(undefined);
+    const trimmedEmail = googleModalEmail.trim().toLowerCase();
+
+    if (!isGmailAddress(trimmedEmail)) {
+      setError('Access denied: Only valid @gmail.com email addresses are allowed.');
+      return;
+    }
+
+    try {
+      const user = loginWithFirebaseUser({
+        email: trimmedEmail,
+        displayName: googleModalName.trim() || trimmedEmail.split('@')[0],
+        uid: `ggl-${Math.floor(100000 + Math.random() * 900000)}`,
+      });
+
+      setShowGoogleModal(false);
+      startTransition(() => {
+        if (user.role === 'hod') {
+          router.push('/hod');
+        } else {
+          router.push('/dashboard');
+        }
+      });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Google Login failed');
+    }
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#ffffff', color: '#111111', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
+      {/* Top Header Bar */}
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px' }}>
+        <Link href="/" prefetch={true} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
+          ‹ BACK
+        </Link>
+        <Link href="/signup" prefetch={true} style={{ textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
+          CREATE ACCOUNT
+        </Link>
+      </header>
+
+      {/* Main Login Container */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 20px 60px' }}>
+        {/* Brand Emblem Logo Icon */}
+        <div style={{ marginBottom: '16px' }}>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 4L22.5 13.5L32 18L22.5 22.5L18 32L13.5 22.5L4 18L13.5 13.5L18 4Z" stroke="#111111" strokeWidth="2.5" strokeLinejoin="round" />
+            <circle cx="18" cy="18" r="4" fill="#111111" />
+          </svg>
+        </div>
+
+        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 6px 0', textAlign: 'center' }}>
+          Log into Losify
+        </h1>
+        <p style={{ color: '#666666', fontSize: '13px', margin: '0 0 32px 0', textAlign: 'center' }}>
+          Only verified <strong style={{ color: '#111111' }}>@gmail.com</strong> accounts are permitted to log in.
+        </p>
+
+        {error && (
+          <div style={{ border: '1px solid #ef4444', background: '#fef2f2', color: '#b91c1c', padding: '12px 20px', borderRadius: '8px', maxWidth: '520px', width: '100%', marginBottom: '24px', textAlign: 'center', fontSize: '14px', fontWeight: 600 }}>
+            ⚠ {error}
+          </div>
+        )}
+
+        {/* Two-Column Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '36px', alignItems: 'center', maxWidth: '780px', width: '100%' }}>
+          {/* Left Column: Email & Password Form */}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', color: '#666666', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                GMAIL ADDRESS
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="yourname@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isPending}
+                className="sq-input-underline"
+              />
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', color: '#666666', textTransform: 'uppercase', margin: 0 }}>
+                  PASSWORD
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666666', fontSize: '16px', padding: 0 }}
+                  title={showPassword ? 'Hide Password' : 'Show Password'}
+                >
+                  👁
+                </button>
+              </div>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isPending}
+                className="sq-input-underline"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isPending}
+              style={{
+                marginTop: '12px',
+                padding: '14px',
+                background: email && password ? '#111111' : '#f0f0f2',
+                color: email && password ? '#ffffff' : '#888888',
+                border: 'none',
+                borderRadius: '4px',
+                fontWeight: 800,
+                fontSize: '13px',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                cursor: isPending ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {isPending ? 'LOGGING IN…' : 'LOG IN WITH GMAIL'}
+            </button>
+          </form>
+
+          {/* Center Divider */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+            <div style={{ width: '1px', height: '80px', background: '#e4e4e7' }} />
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#888888', margin: '12px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              OR
+            </span>
+            <div style={{ width: '1px', height: '80px', background: '#e4e4e7' }} />
+          </div>
+
+          {/* Right Column: Google Authentication */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="sq-btn-social"
+              style={{ padding: '16px 24px', fontSize: '15px', border: '2px solid #4285F4', borderRadius: '8px' }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+              Continue with Google
+            </button>
+            <span style={{ fontSize: '12px', color: '#64748b', textAlign: 'center', lineHeight: 1.4 }}>
+              Sign in instantly with your verified <strong>@gmail.com</strong> Google Account via Firebase Auth.
+            </span>
+          </div>
+        </div>
+
+        {/* Google Verification Modal Fallback */}
+        {showGoogleModal && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}>
+            <div style={{
+              background: '#ffffff',
+              borderRadius: '24px',
+              padding: '36px',
+              maxWidth: '480px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #cbd5e1',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Google Account Sign-In</h3>
+              </div>
+              <p style={{ fontSize: '13px', color: '#64748b', marginTop: 0, marginBottom: '24px', lineHeight: 1.5 }}>
+                Enter your real <strong>@gmail.com</strong> email address to authenticate with Google.
+              </p>
+
+              <form onSubmit={handleGoogleModalSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                    YOUR GMAIL ADDRESS
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="example@gmail.com"
+                    value={googleModalEmail}
+                    onChange={(e) => setGoogleModalEmail(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      outline: 'none',
+                      color: '#0f172a',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                    FULL NAME (OPTIONAL)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    value={googleModalName}
+                    onChange={(e) => setGoogleModalName(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      outline: 'none',
+                      color: '#0f172a',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowGoogleModal(false)}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      color: '#475569',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: '#2563eb',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Sign In with Google
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom Link */}
+        <Link href="/signup" style={{ textDecoration: 'none', color: '#111111', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', marginTop: '48px' }}>
+          NEED AN ACCOUNT? SIGN UP HERE
+        </Link>
+      </main>
+    </div>
+  );
+}

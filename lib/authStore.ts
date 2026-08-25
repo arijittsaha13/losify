@@ -1,0 +1,154 @@
+export interface User {
+  email: string;
+  name: string;
+  registerId: string;
+  role: 'student' | 'hod';
+}
+
+const USERS_KEY = 'losify_registered_users';
+const CURRENT_USER_KEY = 'losify_current_user';
+
+export const DEFAULT_HOD: User & { password: string } = {
+  email: 'arijitsaha1909@gmail.com',
+  password: 'hodpassword123',
+  name: 'Arijit Saha (HOD)',
+  registerId: 'HOD-001',
+  role: 'hod',
+};
+
+export const DEFAULT_STUDENT: User & { password: string } = {
+  email: 'student.losify@gmail.com',
+  password: 'student123',
+  name: 'Student User',
+  registerId: 'STU-2026104',
+  role: 'student',
+};
+
+export function isGmailAddress(email: string): boolean {
+  if (!email) return false;
+  const trimmed = email.trim().toLowerCase();
+  return trimmed.endsWith('@gmail.com');
+}
+
+function initUsers(): Array<User & { password: string }> {
+  if (typeof window === 'undefined') return [DEFAULT_HOD, DEFAULT_STUDENT];
+  try {
+    const saved = localStorage.getItem(USERS_KEY);
+    if (!saved) {
+      const initial = [DEFAULT_HOD, DEFAULT_STUDENT];
+      localStorage.setItem(USERS_KEY, JSON.stringify(initial));
+      return initial;
+    }
+    const parsed = JSON.parse(saved);
+    // Ensure default HOD and Student exist in user list
+    if (!parsed.some((u: any) => u.email.toLowerCase() === DEFAULT_HOD.email.toLowerCase())) {
+      parsed.push(DEFAULT_HOD);
+    }
+    return parsed;
+  } catch {
+    return [DEFAULT_HOD, DEFAULT_STUDENT];
+  }
+}
+
+export function getCurrentUser(): User | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = sessionStorage.getItem(CURRENT_USER_KEY);
+    if (!saved) {
+      return null;
+    }
+    return JSON.parse(saved);
+  } catch {
+    return null;
+  }
+}
+
+export function login(email: string, pass: string): User {
+  const trimmedEmail = email.trim().toLowerCase();
+  if (!trimmedEmail.endsWith('@gmail.com')) {
+    throw new Error('Access denied: Only valid @gmail.com email addresses are allowed.');
+  }
+
+  const users = initUsers();
+  const found = users.find(
+    (u) => u.email.toLowerCase() === trimmedEmail && u.password === pass
+  );
+  if (!found) {
+    throw new Error('Invalid credentials. If you have not registered your @gmail.com account, please Sign Up first or use Continue with Google.');
+  }
+
+  const { password: _, ...userNoPass } = found;
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+    window.dispatchEvent(new Event('authChange'));
+  }
+  return userNoPass;
+}
+
+export function signup(data: {
+  email: string;
+  name: string;
+  registerId: string;
+  password: string;
+  role?: 'student' | 'hod';
+}): User {
+  const trimmedEmail = data.email.trim().toLowerCase();
+  if (!trimmedEmail.endsWith('@gmail.com')) {
+    throw new Error('Registration error: Only real @gmail.com email addresses are allowed.');
+  }
+
+  const users = initUsers();
+  const existing = users.find((u) => u.email.toLowerCase() === trimmedEmail);
+  if (existing) {
+    throw new Error('An account with this @gmail.com address already exists.');
+  }
+
+  const newUser: User & { password: string } = {
+    email: trimmedEmail,
+    name: data.name.trim() || 'Student',
+    registerId: data.registerId.trim() || `STU-${Math.floor(100000 + Math.random() * 900000)}`,
+    password: data.password,
+    role: data.role || 'student',
+  };
+
+  users.push(newUser);
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    const { password: _, ...userNoPass } = newUser;
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+    window.dispatchEvent(new Event('authChange'));
+    return userNoPass;
+  }
+
+  const { password: _, ...userNoPass } = newUser;
+  return userNoPass;
+}
+
+export function loginWithFirebaseUser(firebaseUser: { email?: string | null; displayName?: string | null; uid: string }): User {
+  const email = (firebaseUser.email || '').trim().toLowerCase();
+  if (!email || !email.endsWith('@gmail.com')) {
+    throw new Error('Access denied: Only verified @gmail.com Google accounts are allowed to log in.');
+  }
+
+  const name = firebaseUser.displayName || email.split('@')[0];
+  const userObj: User = {
+    email,
+    name,
+    registerId: `GGL-${firebaseUser.uid.substring(0, 6).toUpperCase()}`,
+    role: email === DEFAULT_HOD.email.toLowerCase() ? 'hod' : 'student',
+  };
+
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userObj));
+    window.dispatchEvent(new Event('authChange'));
+  }
+  return userObj;
+}
+
+export function logout() {
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem(CURRENT_USER_KEY);
+    window.dispatchEvent(new Event('authChange'));
+  }
+}

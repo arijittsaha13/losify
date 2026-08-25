@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini Glass UI — Next-Gen AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #7ba0ff 0%, #c586ff 50%, #ff86c5 100%);
+      --sparkle-gradient: linear-gradient(135deg, #4fa8ff, #a855f7, #ec4899);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #030308;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Video Background Container */
+    .bg-video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #0d1127 0%, #030308 100%);
+    }
+
+    .bg-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.35) blur(28px) saturate(140%);
+      transform: scale(1.12);
+      transition: filter 0.5s ease;
+    }
+
+    /* Animated Fallback Canvas */
+    #bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Radial Ambient Glows */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+      animation: floatOrb 12s infinite alternate ease-in-out;
+    }
+
+    .glow-1 {
+      width: 400px;
+      height: 400px;
+      background: #4f46e5;
+      top: -100px;
+      left: -100px;
+    }
+
+    .glow-2 {
+      width: 500px;
+      height: 500px;
+      background: #c026d3;
+      bottom: -150px;
+      right: -150px;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, 40px) scale(1.15); }
+    }
+
+    /* iOS Glassmorphism Card Container */
+    .gemini-card {
+      width: min(92%, 620px);
+      height: min(88vh, 740px);
+      padding: 28px;
+      border-radius: 32px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(45px) saturate(190%);
+      -webkit-backdrop-filter: blur(45px) saturate(190%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gemini-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sparkle-wrapper {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gemini-sparkle {
+      width: 32px;
+      height: 32px;
+      background: var(--sparkle-gradient);
+      mask: radial-gradient(circle at center, black 55%, transparent 100%);
+      -webkit-mask: radial-gradient(circle at center, black 55%, transparent 100%);
+      border-radius: 50%;
+      animation: rotateSparkle 8s linear infinite;
+    }
+
+    .sparkle-icon {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: url(#sparkleGrad);
+      filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
+      animation: pulseGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotateSparkle {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.96); filter: drop-shadow(0 0 6px rgba(123, 160, 255, 0.6)); }
+      100% { transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(197, 134, 255, 0.9)); }
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(180deg, #ffffff 60%, rgba(255, 255, 255, 0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-selector {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .model-selector:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .model-selector option {
+      background: #0f111a;
+      color: #fff;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Chat Area */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    /* Message Bubbles */
+    .message {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 88%;
+      animation: fadeInMsg 0.3s ease forwards;
+    }
+
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .msg-header {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .msg-bubble {
+      padding: 14px 18px;
+      border-radius: 20px;
+      font-size: 0.93rem;
+      line-height: 1.55;
+      backdrop-filter: blur(12px);
+    }
+
+    .user .msg-bubble {
+      background: linear-gradient(135deg, rgba(123, 160, 255, 0.22), rgba(197, 134, 255, 0.22));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom-right-radius: 4px;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(123, 160, 255, 0.15);
+    }
+
+    .assistant .msg-bubble {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-bottom-left-radius: 4px;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .attached-img-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .action-icon-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* Thinking State Indicator */
+    .thinking-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: #c586ff;
+      background: rgba(197, 134, 255, 0.12);
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(197, 134, 255, 0.25);
+      margin-bottom: 6px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dot {
+      width: 5px;
+      height: 5px;
+      background: #c586ff;
+      border-radius: 50%;
+      animation: blink 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* Quick Suggestion Chips */
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .suggestions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* Attachment Preview Drawer */
+    .attachment-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 16px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .attachment-bar.active {
+      display: flex;
+    }
+
+    .thumb-preview {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .attachment-name {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .remove-attachment {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    /* iOS Pill Input Box */
+    .input-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .input-pill {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 6px 8px 6px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(25px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .input-pill:focus-within {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(197, 134, 255, 0.5);
+      box-shadow: 0 8px 30px rgba(123, 160, 255, 0.25);
+    }
+
+    input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 400;
+      padding: 6px 0;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.42);
+    }
+
+    .input-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tool-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .tool-btn.recording {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.18);
+      animation: pulseRecord 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseRecord {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+    }
+
+    .send-btn {
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.3);
+    }
+
+    .send-btn:hover {
+      transform: scale(1.06);
+      background: #f0f0f0;
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Footer Details */
+    .footer-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.35);
+      margin-top: 10px;
+    }
+
+    /* SVG Gradients */
+    svg {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Video & Canvas -->
+  <div class="bg-video-container">
+    <canvas id="bg-canvas"></canvas>
+    <video class="bg-video" id="bgVideo" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+      <source src="https://assets.codepen.io/3364143/7b003a25-cb54-411a-9e44-51ec50fae735.mp4" type="video/mp4" />
+    </video>
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+  </div>
+
+  <!-- Hidden SVG Defs for Gradients -->
+  <svg style="width:0;height:0;position:absolute;">
+    <defs>
+      <linearGradient id="sparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#7ba0ff" />
+        <stop offset="50%" stop-color="#c586ff" />
+        <stop offset="100%" stop-color="#ff86c5" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- iOS Frosted Glass UI Card -->
+  <div class="gemini-card" id="geminiCard">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-brand">
+        <div class="sparkle-wrapper">
+          <div class="gemini-sparkle"></div>
+          <svg class="sparkle-icon" viewBox="0 0 24 24">
+            <path d="M12 0C12 6.62742 6.62742 12 0 12C6.62742 12 12 17.3726 12 24C12 17.3726 17.3726 12 24 12C17.3726 12 12 6.62742 12 0Z"/>
+          </svg>
+        </div>
+        <h1>Gemini <span style="font-size: 0.65em; font-weight: 500; opacity: 0.65; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px;">GLASS</span></h1>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <select class="model-selector" id="modelSelect">
+          <option value="1.5-pro">Gemini 1.5 Pro</option>
+          <option value="1.5-flash" selected>Gemini 1.5 Flash</option>
+          <option value="thinking">Gemini Thinking</option>
+          <option value="vision">Gemini Live Vision</option>
+        </select>
+        <div class="status-dot" title="Gemini Neural Engine Connected"></div>
+      </div>
+    </div>
+
+    <!-- Chat Messages Scroll Container -->
+    <div class="chat-container" id="chatContainer">
+      <!-- Initial Greeting -->
+      <div class="message assistant">
+        <div class="msg-header">
+          <span>✦ Gemini Glass</span>
+        </div>
+        <div class="msg-bubble">
+          Hello! I am your campus AI Assistant powered by <strong>Gemini Glass</strong>. Ask me to search missing inventory, analyze photos of found items, or draft claim verification reports!
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompts / Suggestion Chips -->
+    <div class="suggestions">
+      <button class="chip" onclick="useSuggestion('Search for lost black Nike backpack in library')">
+        🎒 Lost Nike Backpack
+      </button>
+      <button class="chip" onclick="useSuggestion('Analyze found blue Sony headphones')">
+        🎧 Found Sony Headphones
+      </button>
+      <button class="chip" onclick="useSuggestion('Summarize campus lost & found match statistics')">
+        📊 Match Statistics
+      </button>
+      <button class="chip" onclick="useSuggestion('Draft HOD claim approval note')">
+        📝 Claim Approval Note
+      </button>
+    </div>
+
+    <!-- Image Attachment Preview Drawer -->
+    <div class="attachment-bar" id="attachmentBar">
+      <img src="" id="thumbPreview" class="thumb-preview" alt="Preview" />
+      <span class="attachment-name" id="attachmentName">image.png</span>
+      <button class="remove-attachment" onclick="clearAttachment()" title="Remove file">✕</button>
+    </div>
+
+    <!-- Input Pill -->
+    <div class="input-wrapper">
+      <div class="input-pill">
+        <input type="text" id="userInput" placeholder="Ask Gemini..." autocomplete="off" onkeydown="handleKeyDown(event)" />
+        
+        <div class="input-tools">
+          <button class="tool-btn" onclick="triggerFileUpload()" title="Attach photo or document">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </button>
+          
+          <button class="tool-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice Dictation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send prompt">→</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelected(event)" />
+    </div>
+
+    <div class="footer-note">
+      Gemini Glass Engine • Powered by Google DeepMind Technologies
+    </div>
+  </div>
+
+  <script>
+    // Canvas Fallback Animation
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const particles = Array.from({ length: 25 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 120 + 80,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      hue: Math.random() * 60 + 210,
+    }));
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -p.radius) p.x = width + p.radius;
+        if (p.x > width + p.radius) p.x = -p.radius;
+        if (p.y < -p.radius) p.y = height + p.radius;
+        if (p.y > height + p.radius) p.y = -p.radius;
+
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+        grad.addColorStop(0, `hsla(${p.hue}, 80%, 55%, 0.12)`);
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(animateCanvas);
+    }
+    animateCanvas();
+
+    // 3D Parallax Tilt Effect on Glass Card
+    const card = document.getElementById('geminiCard');
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 12;
+      const y = (clientY / window.innerHeight - 0.5) * 12;
+      card.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg)`;
+    });
+
+    // Chat Logic
+    const chatContainer = document.getElementById('chatContainer');
+    const userInput = document.getElementById('userInput');
+    let attachedFileData = null;
+    let isRecording = false;
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    function useSuggestion(text) {
+      userInput.value = text;
+      sendMessage();
+    }
+
+    function triggerFileUpload() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileSelected(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          attachedFileData = {
+            name: file.name,
+            url: event.target.result
+          };
+          document.getElementById('thumbPreview').src = attachedFileData.url;
+          document.getElementById('attachmentName').textContent = file.name;
+          document.getElementById('attachmentBar').classList.add('active');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function clearAttachment() {
+      attachedFileData = null;
+      document.getElementById('attachmentBar').classList.remove('active');
+      document.getElementById('fileInput').value = '';
+    }
+
+    function toggleVoiceInput() {
+      const micBtn = document.getElementById('micBtn');
+      isRecording = !isRecording;
+      
+      if (isRecording) {
+        micBtn.classList.add('recording');
+        userInput.placeholder = "Listening... Speak now";
+        
+        // Web Speech API fallback simulation
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
+          recognition.onresult = (event) => {
+            userInput.value = event.results[0][0].transcript;
+            toggleVoiceInput();
+          };
+          recognition.onerror = () => toggleVoiceInput();
+          recognition.start();
+        } else {
+          setTimeout(() => {
+            if (isRecording) {
+              userInput.value = "Show matching items near Central Library";
+              toggleVoiceInput();
+            }
+          }, 3000);
+        }
+      } else {
+        micBtn.classList.remove('recording');
+        userInput.placeholder = "Ask Gemini...";
+      }
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text && !attachedFileData) return;
+
+      // Render User Message
+      const userMsgDiv = document.createElement('div');
+      userMsgDiv.className = 'message user';
+      
+      let imgHtml = '';
+      if (attachedFileData) {
+        imgHtml = `<img src="${attachedFileData.url}" class="attached-img-preview" alt="Attachment" />`;
+      }
+
+      userMsgDiv.innerHTML = `
+        <div class="msg-header">You</div>
+        <div class="msg-bubble">
+          ${escapeHtml(text)}
+          ${imgHtml}
+        </div>
+      `;
+      chatContainer.appendChild(userMsgDiv);
+
+      const currentPrompt = text;
+      const currentAttachment = attachedFileData;
+
+      // Clear Inputs
+      userInput.value = '';
+      clearAttachment();
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Render Gemini Thinking State
+      const assistantMsgDiv = document.createElement('div');
+      assistantMsgDiv.className = 'message assistant';
+      assistantMsgDiv.innerHTML = `
+        <div class="msg-header">✦ Gemini Glass</div>
+        <div class="thinking-badge">
+          <span>Synthesizing intelligence</span>
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+        <div class="msg-bubble" id="latestResponse"></div>
+      `;
+      chatContainer.appendChild(assistantMsgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Generate Response Stream Simulation
+      setTimeout(() => {
+        const bubble = assistantMsgDiv.querySelector('#latestResponse');
+        const thinkingBadge = assistantMsgDiv.querySelector('.thinking-badge');
+        if (thinkingBadge) thinkingBadge.remove();
+
+        const model = document.getElementById('modelSelect').value;
+        const responseText = generateAIResponse(currentPrompt, currentAttachment, model);
+        
+        typeResponse(bubble, responseText, () => {
+          // Append action buttons after typing finishes
+          const actionsDiv = document.createElement('div');
+          actionsDiv.className = 'msg-actions';
+          actionsDiv.innerHTML = `
+            <button class="action-icon-btn" onclick="copyResponse(this)">📋 Copy</button>
+            <button class="action-icon-btn" onclick="speakResponse('${escapeHtml(responseText.replace(/'/g, "\\'"))}')">🔊 Listen</button>
+            <button class="action-icon-btn" onclick="likeResponse(this)">👍 Helpful</button>
+          `;
+          assistantMsgDiv.appendChild(actionsDiv);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+      }, 1000);
+    }
+
+    function typeResponse(element, text, callback) {
+      let index = 0;
+      element.innerHTML = '';
+      const interval = setInterval(() => {
+        if (index < text.length) {
+          element.innerHTML = text.substring(0, index + 1);
+          index++;
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        } else {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, 14);
+    }
+
+    function generateAIResponse(prompt, attachment, model) {
+      const lower = prompt.toLowerCase();
+      
+      if (attachment) {
+        return `✦ <strong>Vision Analysis Complete (${model})</strong><br/><br/>
+        Visual Inspection Results:<br/>
+        • <strong>Category:</strong> Personal Accessories / Bag<br/>
+        • <strong>Detected Features:</strong> High-contrast black fabric, silver zippers, branded logo tag.<br/>
+        • <strong>Match Status:</strong> 94% similarity match found with Report #LS-2048 (Reported lost at Campus Library).<br/><br/>
+        <em>Recommendation: Proceed to HOD Desk for verification and claim processing.</em>`;
+      }
+
+      if (lower.includes('nike') || lower.includes('backpack') || lower.includes('bag') || lower.includes('search')) {
+        return `✦ <strong>Found 2 High-Confidence Matches:</strong><br/><br/>
+        1. <strong>Black Nike Utility Backpack</strong> (Item ID: #LS-2048)<br/>
+           • <em>Location:</em> Central Library — 2nd Floor Reading Room<br/>
+           • <em>Status:</em> Logged by Custodian • 92% Match confidence<br/><br/>
+        2. <strong>Dark Grey Nike Sport Bag</strong> (Item ID: #LS-1980)<br/>
+           • <em>Location:</em> Student Center Cafe<br/><br/>
+        Would you like me to reserve Item #LS-2048 for claim verification?`;
+      }
+
+      if (lower.includes('stat') || lower.includes('summary') || lower.includes('count')) {
+        return `📊 <strong>Campus Lost & Found Live Intelligence Summary:</strong><br/><br/>
+        • <strong>Total Reported Lost:</strong> 899 items<br/>
+        • <strong>Total Found Logged:</strong> 800 items<br/>
+        • <strong>Successful AI Matches:</strong> 768 items<br/>
+        • <strong>System Match Accuracy:</strong> 96.4%<br/>
+        • <strong>Average Recovery Time:</strong> 4.2 hours`;
+      }
+
+      if (lower.includes('hod') || lower.includes('draft') || lower.includes('note') || lower.includes('claim')) {
+        return `📝 <strong>HOD Claim Verification Draft:</strong><br/><br/>
+        <code>
+        TO: HOD Administration Desk\n
+        SUBJECT: Verification Request for Item #LS-2048\n\n
+        Respected Sir/Madam,\n
+        I am writing to verify ownership for the reported lost Black Nike Backpack (#LS-2048). Visual features, registered ID, and location history match the campus database records.\n\n
+        Student ID: REG-2026-904
+        </code>`;
+      }
+
+      return `✦ <strong>Gemini Glass Response:</strong><br/><br/>
+      I have analyzed your query: "<em>${escapeHtml(prompt)}</em>". Our campus neural network is ready to assist. You can ask me to scan lost item records, verify image attachments, or generate instant notification drafts for the administration.`;
+    }
+
+    function copyResponse(btn) {
+      const bubble = btn.closest('.message').querySelector('.msg-bubble');
+      navigator.clipboard.writeText(bubble.innerText);
+      const origText = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      setTimeout(() => btn.innerHTML = origText, 2000);
+    }
+
+    function speakResponse(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleanText = text.replace(/<[^>]*>?/gm, '');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function likeResponse(btn) {
+      btn.innerHTML = '❤️ Liked';
+      btn.style.color = '#ec4899';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

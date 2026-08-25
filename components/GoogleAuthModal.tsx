@@ -11,6 +11,30 @@ interface GoogleAuthModalProps {
   initialName?: string;
 }
 
+export function deriveNameFromEmail(email: string, rawName?: string): string {
+  if (rawName && rawName.trim() && rawName !== 'Google User') {
+    return rawName.trim();
+  }
+  const cleanEmail = email.trim().toLowerCase();
+  if (!cleanEmail || !cleanEmail.includes('@')) return 'Google User';
+
+  const userPart = cleanEmail.split('@')[0];
+  const parts = userPart
+    .replace(/[0-9]+/g, ' ')
+    .replace(/[._-]+/g, ' ')
+    .trim()
+    .split(/\s+/);
+
+  if (parts.length === 0 || !parts[0]) return 'Google User';
+
+  const formatted = parts
+    .filter(p => p.length > 0)
+    .map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+    .join(' ');
+
+  return formatted || 'Google User';
+}
+
 export function GoogleAuthModal({
   isOpen,
   onClose,
@@ -21,6 +45,7 @@ export function GoogleAuthModal({
 }: GoogleAuthModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [inputEmail, setInputEmail] = useState(initialEmail);
+  const [inputName, setInputName] = useState(initialName);
   const [selectedEmail, setSelectedEmail] = useState(initialEmail);
   const [selectedName, setSelectedName] = useState(initialName || 'Google User');
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
@@ -39,20 +64,24 @@ export function GoogleAuthModal({
         targetName = localStorage.getItem('losify_last_google_name') || '';
       }
 
+      const computedName = deriveNameFromEmail(targetEmail, targetName);
+
       setInputEmail(targetEmail);
+      setInputName(computedName);
       setSelectedEmail(targetEmail);
 
       if (targetEmail) {
         const existing = findUserByEmail(targetEmail);
         if (existing) {
           setSelectedName(existing.name);
+          setInputName(existing.name);
           setSelectedRole(existing.role);
         } else {
-          setSelectedName(targetName || targetEmail.split('@')[0]);
+          setSelectedName(computedName);
           setSelectedRole(initialRole);
         }
       } else {
-        setSelectedName(targetName || 'Google User');
+        setSelectedName(computedName);
         setSelectedRole(initialRole);
       }
     }
@@ -68,17 +97,19 @@ export function GoogleAuthModal({
       return;
     }
     const existing = findUserByEmail(cleanEmail);
+    const finalName = existing?.name || deriveNameFromEmail(cleanEmail, nameToUse);
     setSelectedEmail(cleanEmail);
-    setSelectedName(existing?.name || nameToUse || cleanEmail.split('@')[0]);
+    setSelectedName(finalName);
     setSelectedRole(existing?.role || initialRole);
     setStep(2);
   };
 
   const handleFinalSubmit = () => {
+    const finalName = selectedName && selectedName !== 'Google User' ? selectedName : deriveNameFromEmail(selectedEmail, inputName);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('losify_last_google_email', selectedEmail);
-        localStorage.setItem('losify_last_google_name', selectedName);
+        localStorage.setItem('losify_last_google_name', finalName);
       } catch {}
     }
 
@@ -88,11 +119,13 @@ export function GoogleAuthModal({
 
     onComplete({
       email: selectedEmail,
-      name: selectedName,
+      name: finalName,
       registerId: regId,
       role: selectedRole,
     });
   };
+
+  const displayName = selectedName && selectedName !== 'Google User' ? selectedName : deriveNameFromEmail(selectedEmail || inputEmail, inputName);
 
   return (
     <div
@@ -149,38 +182,70 @@ export function GoogleAuthModal({
               to continue to <strong style={{ color: '#ffffff' }}>Losify.com</strong>
             </p>
 
-            <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '8px', fontWeight: 500 }}>
-              Google Account email:
-            </label>
-            <input
-              type="email"
-              value={inputEmail}
-              onChange={(e) => {
-                const val = e.target.value;
-                setInputEmail(val);
-                setSelectedEmail(val);
-                setError(undefined);
-              }}
-              placeholder="e.g. yourname@gmail.com"
-              style={{
-                width: '100%',
-                padding: '14px 16px',
-                borderRadius: '12px',
-                backgroundColor: '#282828',
-                border: '1px solid #3c3c3c',
-                color: '#ffffff',
-                fontSize: '15px',
-                outline: 'none',
-                marginBottom: '20px',
-                boxSizing: 'border-box',
-              }}
-            />
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
+                  Google Account email:
+                </label>
+                <input
+                  type="email"
+                  value={inputEmail}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setInputEmail(val);
+                    setSelectedEmail(val);
+                    const nameDerived = deriveNameFromEmail(val, inputName);
+                    setInputName(nameDerived);
+                    setSelectedName(nameDerived);
+                    setError(undefined);
+                  }}
+                  placeholder="e.g. alexa@gmail.com"
+                  style={{
+                    width: '100%',
+                    padding: '13px 14px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
+                  Your Name:
+                </label>
+                <input
+                  type="text"
+                  value={inputName}
+                  onChange={(e) => {
+                    setInputName(e.target.value);
+                    setSelectedName(e.target.value);
+                  }}
+                  placeholder="e.g. Alexa"
+                  style={{
+                    width: '100%',
+                    padding: '13px 14px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
 
             {/* Authenticated Account Card */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '28px' }}>
               <button
                 type="button"
-                onClick={() => handleSelectAccount(inputEmail || selectedEmail, selectedName)}
+                onClick={() => handleSelectAccount(inputEmail || selectedEmail, inputName || selectedName)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -198,11 +263,11 @@ export function GoogleAuthModal({
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
               >
                 <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
-                  {(inputEmail ? inputEmail.charAt(0) : selectedName.charAt(0)).toUpperCase() || 'G'}
+                  {(displayName || 'G').charAt(0).toUpperCase()}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>
-                    {inputEmail ? inputEmail.split('@')[0] : selectedName}
+                    {displayName}
                   </div>
                   <div style={{ fontSize: '13px', color: '#9aa0a6' }}>
                     {inputEmail || 'Enter your @gmail.com address above'}
@@ -259,7 +324,9 @@ export function GoogleAuthModal({
                     </svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff' }}>{selectedName}</div>
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>
+                      {displayName}
+                    </div>
                     <div style={{ fontSize: '12px', color: '#9aa0a6' }}>Name and profile picture</div>
                   </div>
                 </div>

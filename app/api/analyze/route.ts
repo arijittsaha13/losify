@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const imageData: string = body.imageData ?? body.imageUrl ?? '';
+    const fileName: string = body.fileName ?? body.filename ?? body.name ?? '';
 
     if (!imageData || typeof imageData !== 'string') {
       return NextResponse.json(
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await analyzeItem(imageData);
+    const result = await analyzeItem(imageData, fileName);
     return NextResponse.json(result);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';

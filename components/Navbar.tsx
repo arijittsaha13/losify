@@ -8,6 +8,7 @@ export function Navbar() {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [user, setUser] = useState<User | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let prevUserJson = '';
@@ -26,6 +27,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     startTransition(() => router.replace('/login'));
   };
 
@@ -33,144 +35,12 @@ export function Navbar() {
     <div className="sq-nav-wrapper">
       <nav className="sq-nav">
         {/* Brand Logo */}
-        <Link className="brand" href="/" prefetch={true}>
+        <Link className="brand" href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
           LOS<span className="brand-accent">IFY</span>
         </Link>
 
-        {/* Informational dropdown menus */}
+        {/* Desktop Menu */}
         <ul className="sq-menu-list">
-          {/* Products Dropdown */}
-          <li className="sq-menu-item">
-            <span className="sq-menu-link">
-              Products <span className="sq-menu-chevron">▼</span>
-            </span>
-            <div className="sq-dropdown">
-              <div className="sq-dropdown-grid">
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">🔎</div>
-                  <div>
-                    <div className="sq-dropdown-title">Smart Item Matching</div>
-                    <div className="sq-dropdown-desc">Compares item photos and descriptions to find likely matches</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">🛡</div>
-                  <div>
-                    <div className="sq-dropdown-title">HOD Secure Vault</div>
-                    <div className="sq-dropdown-desc">Official departmental custody & verified claims</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">⚡</div>
-                  <div>
-                    <div className="sq-dropdown-title">Instant Alerts</div>
-                    <div className="sq-dropdown-desc">Real-time alerts when matched items surface</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">📊</div>
-                  <div>
-                    <div className="sq-dropdown-title">Match Dashboard</div>
-                    <div className="sq-dropdown-desc">Centralized tracker for active campus reports</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          {/* Categories Dropdown */}
-          <li className="sq-menu-item">
-            <span className="sq-menu-link">
-              Categories <span className="sq-menu-chevron">▼</span>
-            </span>
-            <div className="sq-dropdown" style={{ minWidth: '520px' }}>
-              <div className="sq-dropdown-grid">
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">💻</div>
-                  <div>
-                    <div className="sq-dropdown-title">Electronics</div>
-                    <div className="sq-dropdown-desc">Laptops, phones, AirPods & smartwatches</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">💳</div>
-                  <div>
-                    <div className="sq-dropdown-title">IDs & Cards</div>
-                    <div className="sq-dropdown-desc">Student ID cards, wallets & key fobs</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">🎒</div>
-                  <div>
-                    <div className="sq-dropdown-title">Bags & Apparel</div>
-                    <div className="sq-dropdown-desc">Backpacks, hoodies, jackets & accessories</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">📚</div>
-                  <div>
-                    <div className="sq-dropdown-title">Books & Notes</div>
-                    <div className="sq-dropdown-desc">Textbooks, lab manuals & notebooks</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">🔑</div>
-                  <div>
-                    <div className="sq-dropdown-title">Keys & Access</div>
-                    <div className="sq-dropdown-desc">Keys, keychains, access cards and locker keys</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">⌚</div>
-                  <div>
-                    <div className="sq-dropdown-title">Jewellery & Watches</div>
-                    <div className="sq-dropdown-desc">Watches, rings, bracelets and other valuables</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">🏃</div>
-                  <div>
-                    <div className="sq-dropdown-title">Sports & Equipment</div>
-                    <div className="sq-dropdown-desc">Sports gear, lab equipment, calculators and instruments</div>
-                  </div>
-                </div>
-                <div className="sq-dropdown-card sq-dropdown-card-static">
-                  <div className="sq-dropdown-icon">📦</div>
-                  <div>
-                    <div className="sq-dropdown-title">Other Belongings</div>
-                    <div className="sq-dropdown-desc">Umbrellas, bottles, lunch boxes and miscellaneous items</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          {/* Solutions Dropdown */}
-          <li className="sq-menu-item">
-            <span className="sq-menu-link">
-              Solutions <span className="sq-menu-chevron">▼</span>
-            </span>
-            <div className="sq-dropdown" style={{ minWidth: '380px' }}>
-              <div className="sq-dropdown-grid" style={{ gridTemplateColumns: '1fr' }}>
-                <Link href="/report/lost" className="sq-dropdown-card">
-                  <div className="sq-dropdown-icon">🎓</div>
-                  <div>
-                    <div className="sq-dropdown-title">For Students</div>
-                    <div className="sq-dropdown-desc">Report lost items & get visual AI match suggestions instantly</div>
-                  </div>
-                </Link>
-                <Link href="/hod" className="sq-dropdown-card">
-                  <div className="sq-dropdown-icon">🏛</div>
-                  <div>
-                    <div className="sq-dropdown-title">For Faculty & HOD Desk</div>
-                    <div className="sq-dropdown-desc">Departmental audit desk to verify item handovers safely</div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </li>
-
-          {/* Direct Nav Links */}
           <li className="sq-menu-item">
             <Link href="/dashboard" className="sq-menu-link">
               Live Dashboard
@@ -186,46 +56,162 @@ export function Navbar() {
               + Report Found
             </Link>
           </li>
+          <li className="sq-menu-item">
+            <Link href="/hod" className="sq-menu-link">
+              HOD Control Desk
+            </Link>
+          </li>
         </ul>
 
-        {/* Right Nav Action Buttons */}
+        {/* Right Nav Action Buttons & Mobile Toggle */}
         <div className="sq-nav-actions">
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
                 style={{
-                  padding: '7px 16px',
+                  padding: '6px 14px',
                   borderRadius: '99px',
-                  fontSize: '13px',
+                  fontSize: '12px',
                   fontWeight: 700,
                   background: user.role === 'hod' ? 'linear-gradient(135deg, #38bdf8, #818cf8)' : '#f1f5f9',
                   color: user.role === 'hod' ? '#09090b' : '#0f172a',
                   border: '1px solid #cbd5e1',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {user.role === 'hod' ? '🛡 HOD:' : '👤'} {user.name}
+                {user.role === 'hod' ? '🛡 HOD:' : '👤'} {user.name.split(' ')[0]}
               </span>
               <button
                 onClick={handleLogout}
-                className="sq-btn sq-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '13px' }}
+                className="sq-btn sq-btn-secondary sq-desktop-only"
+                style={{ padding: '8px 14px', fontSize: '12px' }}
               >
                 Log Out
               </button>
             </div>
           ) : (
-            <>
-              <Link href="/login" className="sq-btn sq-btn-secondary">
+            <div className="sq-desktop-only" style={{ display: 'flex', gap: 8 }}>
+              <Link href="/login" className="sq-btn sq-btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
                 Log In
               </Link>
-              <Link href="/signup" className="sq-btn sq-btn-primary">
-                Get Started →
+              <Link href="/signup" className="sq-btn sq-btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }}>
+                Sign Up
               </Link>
-            </>
+            </div>
           )}
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button
+            type="button"
+            className="sq-mobile-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Menu"
+            style={{
+              display: 'none',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              fontSize: '18px',
+              cursor: 'pointer',
+              color: '#0f172a',
+              fontWeight: 700,
+            }}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Slide-Down Dropdown Menu */}
+      {mobileMenuOpen && (
+        <div
+          className="sq-mobile-menu"
+          style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)',
+            padding: '16px',
+            marginTop: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          <Link href="/dashboard" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
+            📊 Live Dashboard
+          </Link>
+          <Link href="/report/lost" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
+            🔍 Report Lost Item
+          </Link>
+          <Link href="/report/found" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
+            📦 Report Found Item
+          </Link>
+          <Link href="/hod" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
+            🛡 HOD Desk
+          </Link>
+          <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '4px 0' }} />
+          {user ? (
+            <button
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid #ef4444',
+                background: '#fef2f2',
+                color: '#b91c1c',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
+            >
+              Log Out ({user.name})
+            </button>
+          ) : (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#0f172a',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  textDecoration: 'none',
+                }}
+              >
+                Log In
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  textDecoration: 'none',
+                }}
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

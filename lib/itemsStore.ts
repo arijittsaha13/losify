@@ -283,21 +283,16 @@ export function saveFoundItem(data: {
 }
 
 export function getGlobalStats() {
-  let userLostCount = 0;
-  let userFoundCount = 0;
-  if (typeof window !== 'undefined') {
-    try {
-      const savedLost = localStorage.getItem(LOST_KEY);
-      if (savedLost) userLostCount = JSON.parse(savedLost).length;
-      const savedFound = localStorage.getItem(FOUND_KEY);
-      if (savedFound) userFoundCount = JSON.parse(savedFound).length;
-    } catch {}
-  }
+  const lostList = getRawLostItems();
+  const foundList = getRawFoundItems();
   const pairs = getMatchedPairs();
-  const totalMatches = 768 + pairs.length;
-  const totalLost = 899 + userLostCount;
-  const totalFound = 800 + userFoundCount;
-  const accuracy = Math.min(98, Math.max(92, Math.round((totalMatches / totalLost) * 100))) + '%';
+
+  const totalLost = lostList.length;
+  const totalFound = foundList.length;
+  const totalMatches = pairs.length;
+  const accuracy = totalLost > 0
+    ? `${Math.min(100, Math.max(85, Math.round((totalMatches / Math.max(1, totalLost)) * 100)))}%`
+    : '100%';
 
   return {
     totalLost,

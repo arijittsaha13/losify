@@ -157,56 +157,58 @@ export default function Hod() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Student (Claimant)</th>
-              <th>AI match</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPairs.length === 0 ? (
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.5)' }}>
-                  No matched items found.
-                </td>
+                <th>Item</th>
+                <th>Student (Claimant)</th>
+                <th>AI match</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ) : (
-              filteredPairs.map((pair) => (
-                <tr key={pair.id}>
-                  <td>
-                    <b>{pair.foundItem.name || pair.lostItem.name}</b>
-                    <br />
-                    <span className="muted">
-                      {pair.foundItem.id} · {pair.foundItem.location}
-                    </span>
-                  </td>
-                  <td>
-                    <b>{pair.studentName}</b>
-                    <br />
-                    <span className="muted">{pair.studentId}</span>
-                  </td>
-                  <td>
-                    <span className="pill">{pair.confidence}% strong</span>
-                  </td>
-                  <td>{pair.collected ? 'COLLECTED' : 'READY FOR COLLECTION'}</td>
-                  <td>
-                    {!pair.collected ? (
-                      <button onClick={() => handleCollect(pair.id)} className="btn primary">
-                        Mark collected
-                      </button>
-                    ) : (
-                      <span className="pill">Complete</span>
-                    )}
+            </thead>
+            <tbody>
+              {filteredPairs.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.5)' }}>
+                    No matched items found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredPairs.map((pair) => (
+                  <tr key={pair.id}>
+                    <td>
+                      <b>{pair.foundItem.name || pair.lostItem.name}</b>
+                      <br />
+                      <span className="muted">
+                        {pair.foundItem.id} · {pair.foundItem.location}
+                      </span>
+                    </td>
+                    <td>
+                      <b>{pair.studentName}</b>
+                      <br />
+                      <span className="muted">{pair.studentId}</span>
+                    </td>
+                    <td>
+                      <span className="pill">{pair.confidence}% strong</span>
+                    </td>
+                    <td>{pair.collected ? 'COLLECTED' : 'READY FOR COLLECTION'}</td>
+                    <td>
+                      {!pair.collected ? (
+                        <button onClick={() => handleCollect(pair.id)} className="btn primary">
+                          Mark collected
+                        </button>
+                      ) : (
+                        <span className="pill">Complete</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="grid two" style={{ marginTop: 20 }}>

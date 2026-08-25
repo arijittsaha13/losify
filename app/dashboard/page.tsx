@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [myLostItems, setMyLostItems] = useState<Item[]>([]);
   const [myFoundItems, setMyFoundItems] = useState<Item[]>([]);
   const [recentFoundItems, setRecentFoundItems] = useState<Item[]>([]);
-  const [globalStats, setGlobalStats] = useState({ totalLost: 899, totalFound: 800, totalMatches: 768, accuracy: '96%' });
+  const [globalStats, setGlobalStats] = useState({ totalLost: 0, totalFound: 0, totalMatches: 0, accuracy: '100%' });
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {

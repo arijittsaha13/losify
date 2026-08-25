@@ -86,7 +86,7 @@ export default function Lost() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageData: compressed }),
+        body: JSON.stringify({ imageData: compressed, fileName: file.name }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Analysis failed');

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { isGmailAddress, findUserByEmail } from '../lib/authStore';
+import { isGmailAddress, findUserByEmail, completeGoogleRegistration } from '../lib/authStore';
 
 interface GoogleAuthModalProps {
   isOpen: boolean;
@@ -43,13 +43,19 @@ export function GoogleAuthModal({
   initialEmail = '',
   initialName = '',
 }: GoogleAuthModalProps) {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [showManualInput, setShowManualInput] = useState(false);
   const [inputEmail, setInputEmail] = useState('');
   const [inputName, setInputName] = useState('');
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedName, setSelectedName] = useState('');
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
+  
+  // Step 3 Profile Completion state
+  const [registerId, setRegisterId] = useState('');
+  const [department, setDepartment] = useState('Computer Science & Engineering');
+  const [phone, setPhone] = useState('');
+  
   const [error, setError] = useState<string>();
 
   useEffect(() => {
@@ -79,12 +85,14 @@ export function GoogleAuthModal({
 
       if (targetEmail) {
         const existing = findUserByEmail(targetEmail);
-        if (existing && existing.name && existing.name !== 'Google User') {
+        if (existing) {
           setSelectedName(existing.name);
           setInputName(existing.name);
           setSelectedRole(existing.role);
+          if (existing.registerId) setRegisterId(existing.registerId);
         } else {
           setSelectedRole(initialRole);
+          setRegisterId('');
         }
       }
     }
@@ -107,11 +115,39 @@ export function GoogleAuthModal({
     setSelectedEmail(cleanEmail);
     setSelectedName(finalName);
     setSelectedRole(existing?.role || initialRole);
+    if (existing?.registerId) {
+      setRegisterId(existing.registerId);
+    }
     setStep(2);
   };
 
+  const handleGoToStep3 = () => {
+    setError(undefined);
+    const existing = findUserByEmail(selectedEmail);
+    if (existing && existing.registerId) {
+      setRegisterId(existing.registerId);
+    }
+    setStep(3);
+  };
+
   const handleFinalSubmit = () => {
+    setError(undefined);
+    const cleanRegId = registerId.trim();
+    if (!cleanRegId) {
+      setError('Please enter your official Registration Number / Roll No. to complete your profile.');
+      return;
+    }
+
     const finalName = deriveNameFromEmail(selectedEmail, selectedName || inputName);
+    
+    // Complete registration in auth store
+    completeGoogleRegistration({
+      email: selectedEmail,
+      name: finalName,
+      registerId: cleanRegId,
+      role: selectedRole,
+    });
+
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('losify_last_google_email', selectedEmail);
@@ -119,14 +155,10 @@ export function GoogleAuthModal({
       } catch {}
     }
 
-    const regId = selectedRole === 'hod'
-      ? `HOD-${Math.floor(100 + Math.random() * 900)}`
-      : `STU-${Math.floor(100000 + Math.random() * 900000)}`;
-
     onComplete({
       email: selectedEmail,
       name: finalName,
-      registerId: regId,
+      registerId: cleanRegId,
       role: selectedRole,
     });
   };
@@ -169,11 +201,13 @@ export function GoogleAuthModal({
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
           </svg>
-          <span style={{ fontSize: '15px', color: '#c4c7c5', fontWeight: 500 }}>Sign in with Google</span>
+          <span style={{ fontSize: '15px', color: '#c4c7c5', fontWeight: 500 }}>
+            {step === 3 ? 'Complete Your Profile' : 'Sign in with Google'}
+          </span>
         </div>
 
         {error && (
-          <div style={{ background: '#3c1818', color: '#f87171', border: '1px solid #7f1d1d', padding: '10px 16px', borderRadius: '10px', fontSize: '13px', marginBottom: '20px' }}>
+          <div style={{ background: '#3c1818', color: '#f87171', border: '1px solid #7f1d1d', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '20px', fontWeight: 500 }}>
             ⚠ {error}
           </div>
         )}
@@ -462,6 +496,185 @@ export function GoogleAuthModal({
               </button>
               <button
                 type="button"
+                onClick={handleGoToStep3}
+                style={{
+                  padding: '12px 32px',
+                  borderRadius: '24px',
+                  border: 'none',
+                  backgroundColor: '#8ab4f8',
+                  color: '#040d1a',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                  transition: 'opacity 0.15s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1.0')}
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: COMPLETE YOUR PROFILE (NAME & REGISTER NO.) */}
+        {step === 3 && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px' }}>
+                {selectedEmail.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h1 style={{ fontSize: '26px', fontWeight: 600, color: '#ffffff', margin: 0, letterSpacing: '-0.3px' }}>
+                  Complete Your Profile
+                </h1>
+                <div style={{ fontSize: '13px', color: '#9aa0a6' }}>
+                  Connected Google Account: <span style={{ color: '#8ab4f8', fontWeight: 500 }}>{selectedEmail}</span>
+                </div>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '14px', color: '#c4c7c5', margin: '0 0 24px 0', lineHeight: 1.5 }}>
+              Please enter your official student / staff registration details to complete your account setup on <strong>Losify.com</strong>.
+            </p>
+
+            <div style={{ backgroundColor: '#181818', borderRadius: '20px', padding: '24px', border: '1px solid #2b2b2b', marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              
+              {/* Full Name Field */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#e3e3e3', marginBottom: '6px', fontWeight: 600 }}>
+                  Full Name <span style={{ color: '#f87171' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={selectedName || inputName}
+                  onChange={(e) => {
+                    setSelectedName(e.target.value);
+                    setInputName(e.target.value);
+                  }}
+                  placeholder="e.g. Alexa Smith"
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Registration Number Field */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#e3e3e3', marginBottom: '6px', fontWeight: 600 }}>
+                  Registration Number / Roll No. <span style={{ color: '#f87171' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={registerId}
+                  onChange={(e) => {
+                    setRegisterId(e.target.value);
+                    setError(undefined);
+                  }}
+                  placeholder="e.g. 21BCE1045 or STU-2026-001"
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <div style={{ fontSize: '12px', color: '#9aa0a6', marginTop: '4px' }}>
+                  This official ID will be attached to your lost and found claims.
+                </div>
+              </div>
+
+              {/* Department Dropdown */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#e3e3e3', marginBottom: '6px', fontWeight: 600 }}>
+                  Department / Branch
+                </label>
+                <select
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="Computer Science & Engineering">Computer Science &amp; Engineering</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Electrical & Electronics">Electrical &amp; Electronics</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Business Administration">Business Administration</option>
+                  <option value="Other / General">Other / General</option>
+                </select>
+              </div>
+
+              {/* Phone Number Field */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: '#e3e3e3', marginBottom: '6px', fontWeight: 600 }}>
+                  Phone Number (Optional)
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. +91 9876543210"
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    backgroundColor: '#282828',
+                    border: '1px solid #3c3c3c',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #2e2e2e', paddingTop: '20px' }}>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '24px',
+                  border: '1px solid #5f6368',
+                  backgroundColor: 'transparent',
+                  color: '#9aa0a6',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
                 onClick={handleFinalSubmit}
                 style={{
                   padding: '12px 32px',
@@ -478,7 +691,7 @@ export function GoogleAuthModal({
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = '1.0')}
               >
-                Continue
+                Complete Signup &amp; Launch Dashboard →
               </button>
             </div>
           </div>

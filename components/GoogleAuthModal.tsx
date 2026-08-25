@@ -20,7 +20,8 @@ export function GoogleAuthModal({
   initialName = '',
 }: GoogleAuthModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [selectedEmail, setSelectedEmail] = useState(initialEmail || 'user@gmail.com');
+  const [inputEmail, setInputEmail] = useState(initialEmail);
+  const [selectedEmail, setSelectedEmail] = useState(initialEmail);
   const [selectedName, setSelectedName] = useState(initialName || 'Google User');
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
   const [error, setError] = useState<string>();
@@ -29,29 +30,37 @@ export function GoogleAuthModal({
     if (isOpen) {
       setStep(1);
       setError(undefined);
-      const existing = findUserByEmail(initialEmail);
-      if (existing) {
-        setSelectedName(existing.name);
-        setSelectedRole(existing.role);
+      const targetEmail = initialEmail.trim();
+      setInputEmail(targetEmail);
+      setSelectedEmail(targetEmail);
+      if (targetEmail) {
+        const existing = findUserByEmail(targetEmail);
+        if (existing) {
+          setSelectedName(existing.name);
+          setSelectedRole(existing.role);
+        } else {
+          setSelectedName(initialName || targetEmail.split('@')[0]);
+          setSelectedRole(initialRole);
+        }
       } else {
-        setSelectedName(initialName);
+        setSelectedName(initialName || 'Google User');
         setSelectedRole(initialRole);
       }
-      setSelectedEmail(initialEmail);
     }
   }, [isOpen, initialEmail, initialName, initialRole]);
 
   if (!isOpen) return null;
 
-  const handleSelectAccount = (email: string, name: string) => {
+  const handleSelectAccount = (emailToVerify: string, nameToUse: string) => {
     setError(undefined);
-    if (!isGmailAddress(email)) {
-      setError('Only verified @gmail.com Google Accounts are permitted.');
+    const cleanEmail = emailToVerify.trim().toLowerCase();
+    if (!cleanEmail || !isGmailAddress(cleanEmail)) {
+      setError('Please enter a valid @gmail.com Google Account email address.');
       return;
     }
-    const existing = findUserByEmail(email);
-    setSelectedEmail(email);
-    setSelectedName(existing?.name || name || email.split('@')[0]);
+    const existing = findUserByEmail(cleanEmail);
+    setSelectedEmail(cleanEmail);
+    setSelectedName(existing?.name || nameToUse || cleanEmail.split('@')[0]);
     setSelectedRole(existing?.role || initialRole);
     setStep(2);
   };
@@ -87,13 +96,13 @@ export function GoogleAuthModal({
       <div
         style={{
           width: '100%',
-          maxWidth: '680px',
+          maxWidth: '620px',
           backgroundColor: '#1e1e1e',
           borderRadius: '28px',
           border: '1px solid #2e2e2e',
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
           color: '#e3e3e3',
-          padding: '40px 48px',
+          padding: '36px 40px',
           position: 'relative',
         }}
       >
@@ -114,21 +123,48 @@ export function GoogleAuthModal({
           </div>
         )}
 
-        {/* STEP 1: CHOOSE AN ACCOUNT */}
+        {/* STEP 1: CHOOSE OR ENTER AN ACCOUNT */}
         {step === 1 && (
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>
               Choose an account
             </h1>
-            <p style={{ fontSize: '16px', color: '#c4c7c5', margin: '0 0 32px 0' }}>
+            <p style={{ fontSize: '15px', color: '#c4c7c5', margin: '0 0 24px 0' }}>
               to continue to <strong style={{ color: '#ffffff' }}>Losify.com</strong>
             </p>
 
+            <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '8px', fontWeight: 500 }}>
+              Enter your Google Account email:
+            </label>
+            <input
+              type="email"
+              value={inputEmail}
+              onChange={(e) => {
+                const val = e.target.value;
+                setInputEmail(val);
+                setSelectedEmail(val);
+                setError(undefined);
+              }}
+              placeholder="e.g. yourname@gmail.com"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: '12px',
+                backgroundColor: '#282828',
+                border: '1px solid #3c3c3c',
+                color: '#ffffff',
+                fontSize: '15px',
+                outline: 'none',
+                marginBottom: '20px',
+                boxSizing: 'border-box',
+              }}
+            />
+
             {/* Authenticated Account Card */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '28px' }}>
               <button
                 type="button"
-                onClick={() => handleSelectAccount(selectedEmail, selectedName)}
+                onClick={() => handleSelectAccount(inputEmail || selectedEmail, selectedName)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -146,21 +182,25 @@ export function GoogleAuthModal({
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
               >
                 <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
-                  {selectedName.charAt(0).toUpperCase()}
+                  {(inputEmail ? inputEmail.charAt(0) : selectedName.charAt(0)).toUpperCase()}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>{selectedName}</div>
-                  <div style={{ fontSize: '13px', color: '#9aa0a6' }}>{selectedEmail}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>
+                    {inputEmail ? inputEmail.split('@')[0] : selectedName}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#9aa0a6' }}>
+                    {inputEmail || 'Enter your @gmail.com address above'}
+                  </div>
                 </div>
-                <div style={{ fontSize: '12px', color: '#8ab4f8', fontWeight: 600 }}>Select →</div>
+                <div style={{ fontSize: '12px', color: '#8ab4f8', fontWeight: 600 }}>Select &amp; Continue →</div>
               </button>
             </div>
 
-            <p style={{ fontSize: '13px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '28px' }}>
+            <p style={{ fontSize: '13px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '24px' }}>
               Before using this app, you can review Losify.com’s <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Privacy Policy</span> and <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Terms of Service</span>.
             </p>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #2e2e2e', paddingTop: '20px', fontSize: '12px', color: '#9aa0a6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #2e2e2e', paddingTop: '16px', fontSize: '12px', color: '#9aa0a6' }}>
               <span>English (United States) ▼</span>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <span style={{ cursor: 'pointer' }}>Help</span>
@@ -174,17 +214,17 @@ export function GoogleAuthModal({
         {/* STEP 2: SIGN IN TO LOSIFY.COM */}
         {step === 2 && (
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#ffffff', margin: '0 0 16px 0', letterSpacing: '-0.5px' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#ffffff', margin: '0 0 16px 0', letterSpacing: '-0.5px' }}>
               Sign in to Losify.com
             </h1>
 
             {/* Selected Account Pill */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#282828', padding: '6px 14px 6px 8px', borderRadius: '20px', border: '1px solid #3c3c3c', marginBottom: '28px', cursor: 'pointer' }} onClick={() => setStep(1)}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#282828', padding: '6px 14px 6px 8px', borderRadius: '20px', border: '1px solid #3c3c3c', marginBottom: '24px', cursor: 'pointer' }} onClick={() => setStep(1)}>
               <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>
-                {selectedName.charAt(0).toUpperCase()}
+                {selectedEmail.charAt(0).toUpperCase()}
               </div>
               <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: 500 }}>{selectedEmail}</span>
-              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼</span>
+              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼ Change</span>
             </div>
 
             {/* Permission Scopes Grid */}
@@ -224,7 +264,7 @@ export function GoogleAuthModal({
               </div>
             </div>
 
-            <p style={{ fontSize: '12px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '28px' }}>
+            <p style={{ fontSize: '12px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '24px' }}>
               Review Losify.com’s <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Privacy Policy</span> and <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Terms of Service</span> to understand how Losify.com will process and protect your data. To make changes at any time, go to your Google Account. <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Learn more about Sign in with Google.</span>
             </p>
 

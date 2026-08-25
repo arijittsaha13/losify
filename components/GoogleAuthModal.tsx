@@ -44,10 +44,11 @@ export function GoogleAuthModal({
   initialName = '',
 }: GoogleAuthModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [inputEmail, setInputEmail] = useState(initialEmail);
-  const [inputName, setInputName] = useState(initialName);
-  const [selectedEmail, setSelectedEmail] = useState(initialEmail);
-  const [selectedName, setSelectedName] = useState(initialName || 'Google User');
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [inputEmail, setInputEmail] = useState('');
+  const [inputName, setInputName] = useState('');
+  const [selectedEmail, setSelectedEmail] = useState('');
+  const [selectedName, setSelectedName] = useState('');
   const [selectedRole, setSelectedRole] = useState<'student' | 'hod'>(initialRole);
   const [error, setError] = useState<string>();
 
@@ -55,34 +56,31 @@ export function GoogleAuthModal({
     if (isOpen) {
       setStep(1);
       setError(undefined);
+      setShowManualInput(false);
 
       let targetEmail = initialEmail.trim();
       let targetName = initialName.trim();
 
       if (!targetEmail && typeof window !== 'undefined') {
-        targetEmail = localStorage.getItem('losify_last_google_email') || '';
-        targetName = localStorage.getItem('losify_last_google_name') || '';
+        targetEmail = localStorage.getItem('losify_last_google_email') || 'arijittsaha1909@gmail.com';
+        targetName = localStorage.getItem('losify_last_google_name') || 'Arijit Saha';
       }
 
       const computedName = deriveNameFromEmail(targetEmail, targetName);
 
+      setSelectedEmail(targetEmail);
+      setSelectedName(computedName);
       setInputEmail(targetEmail);
       setInputName(computedName);
-      setSelectedEmail(targetEmail);
 
       if (targetEmail) {
         const existing = findUserByEmail(targetEmail);
         if (existing) {
           setSelectedName(existing.name);
-          setInputName(existing.name);
           setSelectedRole(existing.role);
         } else {
-          setSelectedName(computedName);
           setSelectedRole(initialRole);
         }
-      } else {
-        setSelectedName(computedName);
-        setSelectedRole(initialRole);
       }
     }
   }, [isOpen, initialEmail, initialName, initialRole]);
@@ -125,7 +123,7 @@ export function GoogleAuthModal({
     });
   };
 
-  const displayName = selectedName && selectedName !== 'Google User' ? selectedName : deriveNameFromEmail(selectedEmail || inputEmail, inputName);
+  const currentDisplayName = selectedName || deriveNameFromEmail(selectedEmail, inputName);
 
   return (
     <div
@@ -145,13 +143,13 @@ export function GoogleAuthModal({
       <div
         style={{
           width: '100%',
-          maxWidth: '620px',
+          maxWidth: '680px',
           backgroundColor: '#1e1e1e',
           borderRadius: '28px',
           border: '1px solid #2e2e2e',
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
           color: '#e3e3e3',
-          padding: '36px 40px',
+          padding: '40px 48px',
           position: 'relative',
         }}
       >
@@ -172,116 +170,185 @@ export function GoogleAuthModal({
           </div>
         )}
 
-        {/* STEP 1: CHOOSE OR ENTER AN ACCOUNT */}
+        {/* STEP 1: CHOOSE AN ACCOUNT */}
         {step === 1 && (
           <div>
-            <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>
               Choose an account
             </h1>
-            <p style={{ fontSize: '15px', color: '#c4c7c5', margin: '0 0 24px 0' }}>
+            <p style={{ fontSize: '16px', color: '#c4c7c5', margin: '0 0 32px 0' }}>
               to continue to <strong style={{ color: '#ffffff' }}>Losify.com</strong>
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '12px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
-                  Google Account email:
-                </label>
-                <input
-                  type="email"
-                  value={inputEmail}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setInputEmail(val);
-                    setSelectedEmail(val);
-                    const nameDerived = deriveNameFromEmail(val, inputName);
-                    setInputName(nameDerived);
-                    setSelectedName(nameDerived);
+            {/* Google Account List Container matching Screenshot 2 */}
+            <div style={{ backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '32px' }}>
+              {/* Account Row Item */}
+              {selectedEmail && !showManualInput && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectAccount(selectedEmail, selectedName)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '18px 20px',
+                    backgroundColor: '#1e1e1e',
+                    border: 'none',
+                    borderBottom: '1px solid #2e2e2e',
+                    color: '#ffffff',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    width: '100%',
+                    transition: 'background-color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
+                >
+                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
+                    {currentDisplayName.charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>{currentDisplayName}</div>
+                    <div style={{ fontSize: '13px', color: '#9aa0a6' }}>{selectedEmail}</div>
+                  </div>
+                </button>
+              )}
+
+              {/* Use Another Account Toggle Button */}
+              {!showManualInput && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowManualInput(true);
+                    setInputEmail('');
+                    setInputName('');
                     setError(undefined);
                   }}
-                  placeholder="e.g. alexa@gmail.com"
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '16px 20px',
+                    backgroundColor: '#1e1e1e',
+                    border: 'none',
+                    color: '#e3e3e3',
+                    textAlign: 'left',
+                    cursor: 'pointer',
                     width: '100%',
-                    padding: '13px 14px',
-                    borderRadius: '12px',
-                    backgroundColor: '#282828',
-                    border: '1px solid #3c3c3c',
-                    color: '#ffffff',
                     fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
+                    fontWeight: 500,
+                    transition: 'background-color 0.15s ease',
                   }}
-                />
-              </div>
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
+                >
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid #5f6368', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', color: '#9aa0a6' }}>
+                    👤
+                  </div>
+                  <span>Use another account</span>
+                </button>
+              )}
 
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
-                  Your Name:
-                </label>
-                <input
-                  type="text"
-                  value={inputName}
-                  onChange={(e) => {
-                    setInputName(e.target.value);
-                    setSelectedName(e.target.value);
-                  }}
-                  placeholder="e.g. Alexa"
-                  style={{
-                    width: '100%',
-                    padding: '13px 14px',
-                    borderRadius: '12px',
-                    backgroundColor: '#282828',
-                    border: '1px solid #3c3c3c',
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
+              {/* Manual Email Input when "Use another account" is clicked */}
+              {showManualInput && (
+                <div style={{ padding: '20px', backgroundColor: '#1e1e1e' }}>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
+                    Google Account email:
+                  </label>
+                  <input
+                    type="email"
+                    value={inputEmail}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setInputEmail(val);
+                      setSelectedEmail(val);
+                      const derived = deriveNameFromEmail(val, inputName);
+                      setInputName(derived);
+                      setSelectedName(derived);
+                      setError(undefined);
+                    }}
+                    placeholder="e.g. yourname@gmail.com"
+                    style={{
+                      width: '100%',
+                      padding: '13px 14px',
+                      borderRadius: '12px',
+                      backgroundColor: '#282828',
+                      border: '1px solid #3c3c3c',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      marginBottom: '14px',
+                    }}
+                  />
+
+                  <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
+                    Your Full Name:
+                  </label>
+                  <input
+                    type="text"
+                    value={inputName}
+                    onChange={(e) => {
+                      setInputName(e.target.value);
+                      setSelectedName(e.target.value);
+                    }}
+                    placeholder="e.g. Arijit Saha"
+                    style={{
+                      width: '100%',
+                      padding: '13px 14px',
+                      borderRadius: '12px',
+                      backgroundColor: '#282828',
+                      border: '1px solid #3c3c3c',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      marginBottom: '18px',
+                    }}
+                  />
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowManualInput(false)}
+                      style={{
+                        padding: '10px 20px',
+                        borderRadius: '20px',
+                        border: '1px solid #5f6368',
+                        backgroundColor: 'transparent',
+                        color: '#9aa0a6',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAccount(inputEmail, inputName)}
+                      style={{
+                        padding: '10px 24px',
+                        borderRadius: '20px',
+                        border: 'none',
+                        backgroundColor: '#8ab4f8',
+                        color: '#040d1a',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Authenticated Account Card */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '28px' }}>
-              <button
-                type="button"
-                onClick={() => handleSelectAccount(inputEmail || selectedEmail, inputName || selectedName)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '18px 20px',
-                  backgroundColor: '#1e1e1e',
-                  border: 'none',
-                  color: '#ffffff',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  width: '100%',
-                  transition: 'background-color 0.15s ease',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
-              >
-                <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
-                  {(displayName || 'G').charAt(0).toUpperCase()}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>
-                    {displayName}
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#9aa0a6' }}>
-                    {inputEmail || 'Enter your @gmail.com address above'}
-                  </div>
-                </div>
-                <div style={{ fontSize: '12px', color: '#8ab4f8', fontWeight: 600 }}>Select &amp; Continue →</div>
-              </button>
-            </div>
-
-            <p style={{ fontSize: '13px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '24px' }}>
+            <p style={{ fontSize: '13px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '28px' }}>
               Before using this app, you can review Losify.com’s <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Privacy Policy</span> and <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Terms of Service</span>.
             </p>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #2e2e2e', paddingTop: '16px', fontSize: '12px', color: '#9aa0a6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #2e2e2e', paddingTop: '20px', fontSize: '12px', color: '#9aa0a6' }}>
               <span>English (United States) ▼</span>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <span style={{ cursor: 'pointer' }}>Help</span>
@@ -292,30 +359,43 @@ export function GoogleAuthModal({
           </div>
         )}
 
-        {/* STEP 2: SIGN IN TO LOSIFY.COM */}
+        {/* STEP 2: SIGN IN TO LOSIFY.COM (PERMISSIONS CONSENT) */}
         {step === 2 && (
           <div>
-            <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#ffffff', margin: '0 0 16px 0', letterSpacing: '-0.5px' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#ffffff', margin: '0 0 16px 0', letterSpacing: '-0.5px' }}>
               Sign in to Losify.com
             </h1>
 
-            {/* Selected Account Pill */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#282828', padding: '6px 14px 6px 8px', borderRadius: '20px', border: '1px solid #3c3c3c', marginBottom: '24px', cursor: 'pointer' }} onClick={() => setStep(1)}>
+            {/* Selected Account Pill matching Screenshot 1 */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#282828',
+                padding: '6px 14px 6px 8px',
+                borderRadius: '20px',
+                border: '1px solid #3c3c3c',
+                marginBottom: '28px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setStep(1)}
+            >
               <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>
                 {selectedEmail.charAt(0).toUpperCase()}
               </div>
               <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: 500 }}>{selectedEmail}</span>
-              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼ Change</span>
+              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼</span>
             </div>
 
-            {/* Permission Scopes Grid */}
+            {/* Permission Scopes Grid matching Screenshot 1 */}
             <div style={{ backgroundColor: '#181818', borderRadius: '20px', padding: '24px', border: '1px solid #2b2b2b', marginBottom: '24px' }}>
               <div style={{ fontSize: '15px', color: '#e3e3e3', fontWeight: 500, marginBottom: '20px', lineHeight: 1.4 }}>
                 Google will allow Losify.com to access this info about you
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {/* Scope Item 1 */}
+                {/* Scope Item 1: Name and profile picture */}
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                   <div style={{ color: '#8ab4f8', marginTop: '2px' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -325,13 +405,13 @@ export function GoogleAuthModal({
                   </div>
                   <div>
                     <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>
-                      {displayName}
+                      {currentDisplayName}
                     </div>
                     <div style={{ fontSize: '12px', color: '#9aa0a6' }}>Name and profile picture</div>
                   </div>
                 </div>
 
-                {/* Scope Item 2 */}
+                {/* Scope Item 2: Email address */}
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                   <div style={{ color: '#8ab4f8', marginTop: '2px' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -347,11 +427,11 @@ export function GoogleAuthModal({
               </div>
             </div>
 
-            <p style={{ fontSize: '12px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '24px' }}>
+            <p style={{ fontSize: '12px', color: '#9aa0a6', lineHeight: 1.5, marginBottom: '28px' }}>
               Review Losify.com’s <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Privacy Policy</span> and <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Terms of Service</span> to understand how Losify.com will process and protect your data. To make changes at any time, go to your Google Account. <span style={{ color: '#8ab4f8', cursor: 'pointer' }}>Learn more about Sign in with Google.</span>
             </p>
 
-            {/* Action Buttons */}
+            {/* Action Buttons matching Screenshot 1 */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #2e2e2e', paddingTop: '20px' }}>
               <button
                 type="button"

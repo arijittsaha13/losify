@@ -61,9 +61,24 @@ export default function SignupPage() {
         }
         setGoogleModalEmail(res.user.email);
         setGoogleModalName(res.user.displayName || res.user.email.split('@')[0]);
+      } else if (typeof window !== 'undefined') {
+        const savedEmail = localStorage.getItem('losify_last_google_email') || '';
+        const savedName = localStorage.getItem('losify_last_google_name') || '';
+        if (savedEmail) {
+          setGoogleModalEmail(savedEmail);
+          setGoogleModalName(savedName);
+        }
       }
     } catch (err: unknown) {
       console.warn('Firebase popup notice:', err);
+      if (typeof window !== 'undefined') {
+        const savedEmail = localStorage.getItem('losify_last_google_email') || '';
+        const savedName = localStorage.getItem('losify_last_google_name') || '';
+        if (savedEmail) {
+          setGoogleModalEmail(savedEmail);
+          setGoogleModalName(savedName);
+        }
+      }
     }
     setShowGoogleModal(true);
   };

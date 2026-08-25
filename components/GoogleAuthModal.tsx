@@ -30,20 +30,29 @@ export function GoogleAuthModal({
     if (isOpen) {
       setStep(1);
       setError(undefined);
-      const targetEmail = initialEmail.trim();
+
+      let targetEmail = initialEmail.trim();
+      let targetName = initialName.trim();
+
+      if (!targetEmail && typeof window !== 'undefined') {
+        targetEmail = localStorage.getItem('losify_last_google_email') || '';
+        targetName = localStorage.getItem('losify_last_google_name') || '';
+      }
+
       setInputEmail(targetEmail);
       setSelectedEmail(targetEmail);
+
       if (targetEmail) {
         const existing = findUserByEmail(targetEmail);
         if (existing) {
           setSelectedName(existing.name);
           setSelectedRole(existing.role);
         } else {
-          setSelectedName(initialName || targetEmail.split('@')[0]);
+          setSelectedName(targetName || targetEmail.split('@')[0]);
           setSelectedRole(initialRole);
         }
       } else {
-        setSelectedName(initialName || 'Google User');
+        setSelectedName(targetName || 'Google User');
         setSelectedRole(initialRole);
       }
     }
@@ -66,6 +75,13 @@ export function GoogleAuthModal({
   };
 
   const handleFinalSubmit = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('losify_last_google_email', selectedEmail);
+        localStorage.setItem('losify_last_google_name', selectedName);
+      } catch {}
+    }
+
     const regId = selectedRole === 'hod'
       ? `HOD-${Math.floor(100 + Math.random() * 900)}`
       : `STU-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -134,7 +150,7 @@ export function GoogleAuthModal({
             </p>
 
             <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '8px', fontWeight: 500 }}>
-              Enter your Google Account email:
+              Google Account email:
             </label>
             <input
               type="email"
@@ -182,7 +198,7 @@ export function GoogleAuthModal({
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
               >
                 <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '18px' }}>
-                  {(inputEmail ? inputEmail.charAt(0) : selectedName.charAt(0)).toUpperCase()}
+                  {(inputEmail ? inputEmail.charAt(0) : selectedName.charAt(0)).toUpperCase() || 'G'}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>

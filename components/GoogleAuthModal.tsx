@@ -16,7 +16,7 @@ export function deriveNameFromEmail(email: string, rawName?: string): string {
     return rawName.trim();
   }
   const cleanEmail = email ? email.trim().toLowerCase() : '';
-  if (!cleanEmail || !cleanEmail.includes('@')) return 'Student User';
+  if (!cleanEmail || !cleanEmail.includes('@')) return '';
 
   const userPart = cleanEmail.split('@')[0];
   const parts = userPart
@@ -62,13 +62,12 @@ export function GoogleAuthModal({
     if (isOpen) {
       setStep(1);
       setError(undefined);
-      setShowManualInput(false);
 
       let targetEmail = initialEmail.trim();
       let targetName = initialName.trim();
 
       if (!targetEmail && typeof window !== 'undefined') {
-        targetEmail = localStorage.getItem('losify_last_google_email') || 'alexa1447as@gmail.com';
+        targetEmail = localStorage.getItem('losify_last_google_email') || '';
         targetName = localStorage.getItem('losify_last_google_name') || '';
       }
 
@@ -76,14 +75,14 @@ export function GoogleAuthModal({
         targetName = '';
       }
 
-      const computedName = deriveNameFromEmail(targetEmail, targetName);
-
-      setSelectedEmail(targetEmail);
-      setSelectedName(computedName);
-      setInputEmail(targetEmail);
-      setInputName(computedName);
-
       if (targetEmail) {
+        const computedName = deriveNameFromEmail(targetEmail, targetName);
+        setSelectedEmail(targetEmail);
+        setSelectedName(computedName);
+        setInputEmail(targetEmail);
+        setInputName(computedName);
+        setShowManualInput(false);
+
         const existing = findUserByEmail(targetEmail);
         if (existing) {
           setSelectedName(existing.name);
@@ -94,6 +93,14 @@ export function GoogleAuthModal({
           setSelectedRole(initialRole);
           setRegisterId('');
         }
+      } else {
+        // If no email is saved, do NOT show any fake/Alexa account!
+        // Show input box directly so the person types THEIR OWN Gmail address!
+        setSelectedEmail('');
+        setSelectedName('');
+        setInputEmail('');
+        setInputName('');
+        setShowManualInput(true);
       }
     }
   }, [isOpen, initialEmail, initialName, initialRole]);
@@ -163,7 +170,7 @@ export function GoogleAuthModal({
     });
   };
 
-  const currentDisplayName = deriveNameFromEmail(selectedEmail || inputEmail, selectedName || inputName);
+  const currentDisplayName = deriveNameFromEmail(selectedEmail || inputEmail, selectedName || inputName) || 'Student User';
 
   return (
     <div
@@ -224,7 +231,7 @@ export function GoogleAuthModal({
 
             {/* Google Account List Container */}
             <div style={{ backgroundColor: '#282828', borderRadius: '16px', overflow: 'hidden', border: '1px solid #333333', marginBottom: '32px' }}>
-              {/* Account Row Item */}
+              {/* Active Saved Account Row Item (Shown only if user logged in previously on this device) */}
               {selectedEmail && !showManualInput && (
                 <button
                   type="button"
@@ -257,7 +264,7 @@ export function GoogleAuthModal({
               )}
 
               {/* Use Another Account Toggle Button */}
-              {!showManualInput && (
+              {selectedEmail && !showManualInput && (
                 <button
                   type="button"
                   onClick={() => {
@@ -291,11 +298,11 @@ export function GoogleAuthModal({
                 </button>
               )}
 
-              {/* Manual Email Input when "Use another account" is clicked */}
+              {/* Email & Name Input Form (Shown when no account saved or "Use another account" clicked) */}
               {showManualInput && (
-                <div style={{ padding: '20px', backgroundColor: '#1e1e1e' }}>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
-                    Google Account email:
+                <div style={{ padding: '24px', backgroundColor: '#1e1e1e' }}>
+                  <label style={{ display: 'block', fontSize: '14px', color: '#ffffff', marginBottom: '8px', fontWeight: 600 }}>
+                    Enter your Google Account email:
                   </label>
                   <input
                     type="email"
@@ -312,20 +319,20 @@ export function GoogleAuthModal({
                     placeholder="e.g. yourname@gmail.com"
                     style={{
                       width: '100%',
-                      padding: '13px 14px',
+                      padding: '14px 16px',
                       borderRadius: '12px',
                       backgroundColor: '#282828',
                       border: '1px solid #3c3c3c',
                       color: '#ffffff',
-                      fontSize: '14px',
+                      fontSize: '15px',
                       outline: 'none',
                       boxSizing: 'border-box',
-                      marginBottom: '14px',
+                      marginBottom: '16px',
                     }}
                   />
 
-                  <label style={{ display: 'block', fontSize: '13px', color: '#c4c7c5', marginBottom: '6px', fontWeight: 500 }}>
-                    Your Full Name:
+                  <label style={{ display: 'block', fontSize: '14px', color: '#ffffff', marginBottom: '8px', fontWeight: 600 }}>
+                    Your Name:
                   </label>
                   <input
                     type="text"
@@ -334,49 +341,52 @@ export function GoogleAuthModal({
                       setInputName(e.target.value);
                       setSelectedName(e.target.value);
                     }}
-                    placeholder="e.g. Alexa"
+                    placeholder="e.g. Arijit Saha"
                     style={{
                       width: '100%',
-                      padding: '13px 14px',
+                      padding: '14px 16px',
                       borderRadius: '12px',
                       backgroundColor: '#282828',
                       border: '1px solid #3c3c3c',
                       color: '#ffffff',
-                      fontSize: '14px',
+                      fontSize: '15px',
                       outline: 'none',
                       boxSizing: 'border-box',
-                      marginBottom: '18px',
+                      marginBottom: '20px',
                     }}
                   />
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setShowManualInput(false)}
-                      style={{
-                        padding: '10px 20px',
-                        borderRadius: '20px',
-                        border: '1px solid #5f6368',
-                        backgroundColor: 'transparent',
-                        color: '#9aa0a6',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Back
-                    </button>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                    {selectedEmail && (
+                      <button
+                        type="button"
+                        onClick={() => setShowManualInput(false)}
+                        style={{
+                          padding: '12px 24px',
+                          borderRadius: '24px',
+                          border: '1px solid #5f6368',
+                          backgroundColor: 'transparent',
+                          color: '#9aa0a6',
+                          fontSize: '14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleSelectAccount(inputEmail, inputName)}
                       style={{
-                        padding: '10px 24px',
-                        borderRadius: '20px',
+                        padding: '12px 28px',
+                        borderRadius: '24px',
                         border: 'none',
                         backgroundColor: '#8ab4f8',
                         color: '#040d1a',
                         fontWeight: 700,
-                        fontSize: '13px',
+                        fontSize: '14px',
                         cursor: 'pointer',
+                        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                       }}
                     >
                       Next →
@@ -424,10 +434,10 @@ export function GoogleAuthModal({
               onClick={() => setStep(1)}
             >
               <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>
-                {selectedEmail.charAt(0).toUpperCase()}
+                {(selectedEmail || 'G').charAt(0).toUpperCase()}
               </div>
               <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: 500 }}>{selectedEmail}</span>
-              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼</span>
+              <span style={{ fontSize: '10px', color: '#9aa0a6' }}>▼ Change</span>
             </div>
 
             {/* Permission Scopes Grid */}
@@ -523,7 +533,7 @@ export function GoogleAuthModal({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px' }}>
-                {selectedEmail.charAt(0).toUpperCase()}
+                {(selectedEmail || 'G').charAt(0).toUpperCase()}
               </div>
               <div>
                 <h1 style={{ fontSize: '26px', fontWeight: 600, color: '#ffffff', margin: 0, letterSpacing: '-0.3px' }}>
@@ -553,7 +563,7 @@ export function GoogleAuthModal({
                     setSelectedName(e.target.value);
                     setInputName(e.target.value);
                   }}
-                  placeholder="e.g. Alexa Smith"
+                  placeholder="e.g. Arijit Saha"
                   style={{
                     width: '100%',
                     padding: '14px 16px',

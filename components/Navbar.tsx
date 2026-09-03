@@ -70,7 +70,7 @@ export function Navbar() {
             </Link>
           </li>
           <li className="sq-menu-item">
-            <Link href="/report/lost" className="sq-menu-link" style={{ color: 'var(--sq-accent-blue)' }}>
+            <Link href="/report/lost" className="sq-menu-link">
               + Report Lost
             </Link>
           </li>

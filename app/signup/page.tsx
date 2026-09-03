@@ -2,6 +2,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { signup, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
 
@@ -95,18 +96,19 @@ export default function SignupPage() {
       {/* Main Container */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 20px 60px' }}>
         <div style={{ marginBottom: '16px' }}>
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 4L22.5 13.5L32 18L22.5 22.5L18 32L13.5 22.5L4 18L13.5 13.5L18 4Z" stroke="#111111" strokeWidth="2.5" strokeLinejoin="round" />
-            <circle cx="18" cy="18" r="4" fill="#111111" />
-          </svg>
+          <Image
+            src="/images/logo-transparent.png"
+            alt="Losify Logo"
+            width={92}
+            height={92}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
         </div>
 
-        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 8px 0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 32px 0', textAlign: 'center' }}>
           Create your Losify account
         </h1>
-        <p style={{ color: '#666666', fontSize: '14px', margin: '0 0 32px 0', textAlign: 'center' }}>
-          Register with a valid <strong style={{ color: '#111111' }}>@gmail.com</strong> address to access campus lost &amp; found.
-        </p>
 
         {error && (
           <div style={{ border: '1px solid #ef4444', background: '#fef2f2', color: '#b91c1c', padding: '12px 20px', borderRadius: '8px', maxWidth: '460px', width: '100%', marginBottom: '24px', textAlign: 'center', fontSize: '14px', fontWeight: 600 }}>

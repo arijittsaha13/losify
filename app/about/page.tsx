@@ -5,13 +5,6 @@ export default function AboutPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#ffffff', color: '#0f172a', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
       <main style={{ flex: 1, maxWidth: '1000px', width: '100%', margin: '0 auto', padding: '40px 24px 80px' }}>
-        {/* Breadcrumb / Back Link */}
-        <div style={{ marginBottom: '24px' }}>
-          <Link href="/" prefetch={true} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#2563eb', fontSize: '13px', fontWeight: 800, letterSpacing: '1px' }}>
-            ‹ BACK TO HOME
-          </Link>
-        </div>
-
         {/* Hero Header Section */}
         <div style={{ textAlign: 'center', padding: '40px 20px 50px', background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderRadius: '32px', border: '1px solid #f1f5f9', marginBottom: '50px' }}>
           <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>

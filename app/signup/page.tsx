@@ -84,10 +84,7 @@ export default function SignupPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#ffffff', color: '#111111', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header Bar */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px' }}>
-        <Link href="/" prefetch={true} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
-          ‹ BACK TO HOME
-        </Link>
+      <header style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '24px 40px' }}>
         <Link href="/login" prefetch={true} style={{ textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
           LOG IN
         </Link>

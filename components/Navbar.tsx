@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getCurrentUser, logout, type User } from '../lib/authStore';
 import { EditProfileModal } from './EditProfileModal';
+import { AboutAppModal } from './AboutAppModal';
 
 export function Navbar() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,7 +52,15 @@ export function Navbar() {
   return (
     <div className="sq-nav-wrapper">
       <nav className="sq-nav">
-        <Link className="brand" href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
+        <div
+          className="brand"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setIsAboutModalOpen(true);
+          }}
+          style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
+          title="Click to view details about Losify app"
+        >
           <Image
             src="/images/logo-transparent.png"
             alt="Losify Blue Logo"
@@ -60,7 +70,7 @@ export function Navbar() {
             priority
           />
           <span className="brand-text">LOS<span className="brand-accent">IFY</span></span>
-        </Link>
+        </div>
 
         {/* Desktop Menu */}
         <ul className="sq-menu-list">
@@ -410,6 +420,12 @@ export function Navbar() {
           user={user}
         />
       )}
+
+      {/* About App Details Modal */}
+      <AboutAppModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
     </div>
   );
 }

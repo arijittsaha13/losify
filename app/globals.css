@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -108,10 +108,10 @@ body {
 }
 
 .brand {
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  color: var(--sq-ink-primary);
+  font-family: 'Cinzel', 'Outfit', 'Montserrat', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -119,9 +119,22 @@ body {
   line-height: 1;
 }
 
+.brand-text {
+  background: linear-gradient(135deg, #b8860b 0%, #d4af37 20%, #fff4b8 45%, #e5c158 70%, #997318 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-family: 'Cinzel', 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  filter: drop-shadow(0 1px 3px rgba(184, 134, 11, 0.35));
+  transition: filter 0.3s ease;
+}
+
 .brand-logo-img {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.45));
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
@@ -132,11 +145,33 @@ body {
   filter: drop-shadow(0 4px 14px rgba(212, 175, 55, 0.65));
 }
 
+.brand:hover .brand-text {
+  filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.65));
+}
+
 .brand-accent {
-  background: linear-gradient(135deg, #2e72ef, #7aa2f8);
+  background: linear-gradient(135deg, #fff6c5 0%, #f3d179 40%, #c49929 80%, #8c6812 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-left: 2px;
+  background-clip: text;
+  margin-left: 1px;
+  font-weight: 900;
+}
+
+.sq-footer-brand {
+  font-family: 'Cinzel', 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #b8860b 0%, #d4af37 20%, #fff4b8 45%, #e5c158 70%, #997318 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 3px rgba(184, 134, 11, 0.35));
 }
 
 /* Nav Menu Items & Dropdowns */

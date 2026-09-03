@@ -295,8 +295,15 @@ export default function Home() {
       <footer className="sq-footer">
         <div className="sq-footer-grid">
           <div>
-            <Link href="/" className="sq-footer-brand">
-              LOS<span className="brand-accent">IFY</span>
+            <Link href="/" className="brand">
+              <Image
+                src="/images/logo-transparent.png"
+                alt="Losify Golden Logo"
+                width={32}
+                height={32}
+                className="brand-logo-img"
+              />
+              <span className="brand-text">LOS<span className="brand-accent">IFY</span></span>
             </Link>
             <p style={{ color: 'var(--sq-ink-secondary)', fontSize: '14px', maxWidth: '300px', lineHeight: 1.6 }}>
               The intelligent campus recovery platform powered by AI vision and secure departmental custody.

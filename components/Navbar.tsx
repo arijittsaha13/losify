@@ -35,17 +35,16 @@ export function Navbar() {
   return (
     <div className="sq-nav-wrapper">
       <nav className="sq-nav">
-        {/* Brand Logo */}
         <Link className="brand" href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
           <Image
             src="/images/logo-transparent.png"
             alt="Losify Golden Logo"
-            width={34}
-            height={34}
+            width={36}
+            height={36}
             className="brand-logo-img"
             priority
           />
-          <span>LOS<span className="brand-accent">IFY</span></span>
+          <span className="brand-text">LOS<span className="brand-accent">IFY</span></span>
         </Link>
 
         {/* Desktop Menu */}

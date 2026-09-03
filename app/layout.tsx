@@ -1,6 +1,7 @@
 import './globals.css';
 import { Navbar } from '../components/Navbar';
 import { AppBackground } from '../components/AppBackground';
+import { ThemeSwitcher } from '../components/ThemeSwitcher';
 import { Montserrat } from 'next/font/google';
 
 const montserrat = Montserrat({
@@ -26,6 +27,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Navbar />
           {children}
         </div>
+
+        {/* Floating Theme Appearance Switcher (Light, Dark, System) */}
+        <ThemeSwitcher />
       </body>
     </html>
   );

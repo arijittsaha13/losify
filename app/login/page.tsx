@@ -94,13 +94,13 @@ export default function LoginPage() {
       {/* Main Login Container */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 20px 60px' }}>
         {/* Brand Emblem Logo Icon */}
-        <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: '18px' }}>
           <Image
             src="/images/logo-transparent.png"
             alt="Losify Logo"
-            width={52}
-            height={52}
-            style={{ objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(212, 175, 55, 0.4))' }}
+            width={68}
+            height={68}
+            style={{ objectFit: 'contain', filter: 'drop-shadow(0 4px 14px rgba(184, 134, 11, 0.6)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }}
             priority
           />
         </div>

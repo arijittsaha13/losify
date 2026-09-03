@@ -109,48 +109,48 @@ body {
 
 .brand {
   font-family: 'Cinzel', 'Outfit', 'Montserrat', sans-serif;
-  font-size: 21px;
-  font-weight: 800;
+  font-size: 23px;
+  font-weight: 900;
   letter-spacing: 1.5px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   line-height: 1;
 }
 
 .brand-text {
-  background: linear-gradient(135deg, #b8860b 0%, #d4af37 20%, #fff4b8 45%, #e5c158 70%, #997318 100%);
+  background: linear-gradient(135deg, #7a5000 0%, #b8860b 25%, #d4af37 50%, #a67c1e 75%, #593900 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
   font-family: 'Cinzel', 'Outfit', sans-serif;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  filter: drop-shadow(0 1px 3px rgba(184, 134, 11, 0.35));
+  font-weight: 900;
+  letter-spacing: 1.8px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0 2px 6px rgba(184, 134, 11, 0.4));
   transition: filter 0.3s ease;
 }
 
 .brand-logo-img {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.45));
+  filter: drop-shadow(0 3px 6px rgba(160, 110, 10, 0.55)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
 }
 
 .brand:hover .brand-logo-img {
   transform: scale(1.12) rotate(6deg);
-  filter: drop-shadow(0 4px 14px rgba(212, 175, 55, 0.65));
+  filter: drop-shadow(0 5px 16px rgba(212, 175, 55, 0.75));
 }
 
 .brand:hover .brand-text {
-  filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.65));
+  filter: drop-shadow(0 2px 10px rgba(212, 175, 55, 0.7));
 }
 
 .brand-accent {
-  background: linear-gradient(135deg, #fff6c5 0%, #f3d179 40%, #c49929 80%, #8c6812 100%);
+  background: linear-gradient(135deg, #d4af37 0%, #f5d061 35%, #b8860b 70%, #664200 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

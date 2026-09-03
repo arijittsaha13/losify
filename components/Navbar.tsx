@@ -39,8 +39,8 @@ export function Navbar() {
           <Image
             src="/images/logo-transparent.png"
             alt="Losify Golden Logo"
-            width={36}
-            height={36}
+            width={44}
+            height={44}
             className="brand-logo-img"
             priority
           />

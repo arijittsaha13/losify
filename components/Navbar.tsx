@@ -39,8 +39,8 @@ export function Navbar() {
           <Image
             src="/images/logo-transparent.png"
             alt="Losify Blue Logo"
-            width={62}
-            height={62}
+            width={92}
+            height={92}
             className="brand-logo-img"
             priority
           />

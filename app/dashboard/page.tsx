@@ -16,22 +16,32 @@ export default function Dashboard() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    const current = getCurrentUser();
-    if (!current) {
-      router.replace('/login');
-      return;
-    }
-    setUser(current);
+    let prevJson = '';
+    const loadProfile = () => {
+      const current = getCurrentUser();
+      if (!current) {
+        router.replace('/login');
+        return;
+      }
+      const currentJson = JSON.stringify(current);
+      if (currentJson !== prevJson) {
+        prevJson = currentJson;
+        setUser(current);
 
-    // Defer non-critical data processing to keep transition responsive
-    startTransition(() => {
-      const userLost = getMyLostItems(current.registerId, current.name);
-      const userFound = getMyFoundItems(current.registerId, current.name);
-      setMyLostItems(userLost);
-      setMyFoundItems(userFound);
-      setRecentFoundItems(getFoundItems());
-      setGlobalStats(getGlobalStats());
-    });
+        startTransition(() => {
+          const userLost = getMyLostItems(current.registerId, current.name);
+          const userFound = getMyFoundItems(current.registerId, current.name);
+          setMyLostItems(userLost);
+          setMyFoundItems(userFound);
+          setRecentFoundItems(getFoundItems());
+          setGlobalStats(getGlobalStats());
+        });
+      }
+    };
+
+    loadProfile();
+    window.addEventListener('authChange', loadProfile);
+    return () => window.removeEventListener('authChange', loadProfile);
   }, [router]);
 
   if (!user) return null;

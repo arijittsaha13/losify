@@ -3,6 +3,10 @@ export interface User {
   name: string;
   registerId: string;
   role: 'student' | 'hod';
+  phone?: string;
+  department?: string;
+  course?: string;
+  avatar?: string;
 }
 
 const USERS_KEY = 'losify_registered_users';
@@ -214,6 +218,34 @@ export function completeGoogleRegistration(data: {
 
   if (existingIndex >= 0) {
     users[existingIndex] = { ...users[existingIndex], ...updatedUser };
+  } else {
+    users.push(updatedUser);
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+    window.dispatchEvent(new Event('authChange'));
+  }
+
+  return updatedUser;
+}
+
+export function updateUserProfile(updates: Partial<Omit<User, 'email' | 'role'>>): User {
+  const current = getCurrentUser();
+  if (!current) throw new Error('No user is currently logged in.');
+
+  const updatedUser: User = {
+    ...current,
+    ...updates,
+    name: updates.name ? updates.name.trim() : current.name,
+    registerId: updates.registerId ? updates.registerId.trim() : current.registerId,
+  };
+
+  const users = initUsers();
+  const index = users.findIndex((u) => u.email.toLowerCase() === current.email.toLowerCase());
+  if (index >= 0) {
+    users[index] = { ...users[index], ...updatedUser };
   } else {
     users.push(updatedUser);
   }

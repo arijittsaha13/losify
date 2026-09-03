@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getCurrentUser, logout, type User } from '../lib/authStore';
+import { EditProfileModal } from './EditProfileModal';
 
 export function Navbar() {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [user, setUser] = useState<User | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     let prevUserJson = '';
@@ -75,21 +78,167 @@ export function Navbar() {
         <div className="sq-nav-actions">
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '99px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  background: user.role === 'hod' ? 'linear-gradient(135deg, #38bdf8, #818cf8)' : '#f1f5f9',
-                  color: user.role === 'hod' ? '#09090b' : '#0f172a',
-                  border: '1px solid #cbd5e1',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-                  whiteSpace: 'nowrap',
-                }}
+              {/* Profile Tag with Hover & Click Popup Menu */}
+              <div
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setProfileDropdownOpen(true)}
+                onMouseLeave={() => setProfileDropdownOpen(false)}
               >
-                {user.role === 'hod' ? '🛡 HOD:' : '👤'} {user.name.split(' ')[0]}
-              </span>
+                <button
+                  type="button"
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '5px 14px 5px 6px',
+                    borderRadius: '99px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    background: user.role === 'hod' ? 'linear-gradient(135deg, #0f172a, #1e293b)' : '#ffffff',
+                    color: user.role === 'hod' ? '#ffffff' : '#0f172a',
+                    border: '1.5px solid #cbd5e1',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      borderRadius: '50%',
+                      background: '#2563eb',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '12px',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      user.name.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <span>{user.role === 'hod' ? `🛡 ${user.name.split(' ')[0]}` : user.name.split(' ')[0]}</span>
+                  <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
+                </button>
+
+                {/* Profile Popup Menu on Hover / Click */}
+                {profileDropdownOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '100%',
+                      marginTop: '6px',
+                      width: '270px',
+                      background: '#ffffff',
+                      borderRadius: '16px',
+                      boxShadow: '0 20px 40px rgba(15, 23, 42, 0.18)',
+                      border: '1px solid #e2e8f0',
+                      padding: '16px',
+                      zIndex: 100,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div
+                        style={{
+                          width: '44px',
+                          height: '44px',
+                          borderRadius: '50%',
+                          background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+                          color: '#ffffff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 800,
+                          fontSize: '18px',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {user.avatar ? (
+                          <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          user.name.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div style={{ overflow: 'hidden', textAlign: 'left' }}>
+                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {user.name}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {user.email}
+                        </div>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', marginTop: '2px' }}>
+                          ID: {user.registerId}
+                        </div>
+                      </div>
+                    </div>
+
+                    <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        setIsEditModalOpen(true);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '10px',
+                        border: '1px solid #bfdbfe',
+                        background: '#eff6ff',
+                        color: '#1d4ed8',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      ✏ Edit Profile
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '10px',
+                        border: '1px solid #fee2e2',
+                        background: '#fef2f2',
+                        color: '#b91c1c',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      🚪 Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={handleLogout}
                 className="sq-btn sq-btn-secondary sq-desktop-only"
@@ -162,22 +311,43 @@ export function Navbar() {
           </Link>
           <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '4px 0' }} />
           {user ? (
-            <button
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                border: '1px solid #ef4444',
-                background: '#fef2f2',
-                color: '#b91c1c',
-                fontWeight: 700,
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
-            >
-              Log Out ({user.name})
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsEditModalOpen(true);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #bfdbfe',
+                  background: '#eff6ff',
+                  color: '#1d4ed8',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                ✏ Edit Profile ({user.name})
+              </button>
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #ef4444',
+                  background: '#fef2f2',
+                  color: '#b91c1c',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                Log Out
+              </button>
+            </>
           ) : (
             <div style={{ display: 'flex', gap: '10px' }}>
               <Link
@@ -219,6 +389,15 @@ export function Navbar() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {user && (
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          user={user}
+        />
       )}
     </div>
   );

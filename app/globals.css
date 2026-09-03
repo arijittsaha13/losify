@@ -108,10 +108,10 @@ body {
 }
 
 .brand {
-  font-family: 'Cinzel', 'Outfit', 'Montserrat', sans-serif;
-  font-size: 23px;
+  font-family: 'Montserrat', var(--font-sans), sans-serif;
+  font-size: 26px;
   font-weight: 900;
-  letter-spacing: 1.5px;
+  letter-spacing: -0.5px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -120,37 +120,37 @@ body {
 }
 
 .brand-text {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 40%, #3b82f6 75%, #60a5fa 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
-  font-family: 'Cinzel', 'Outfit', sans-serif;
+  font-family: 'Montserrat', var(--font-sans), sans-serif;
   font-weight: 900;
-  letter-spacing: 1.8px;
-  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.35));
+  letter-spacing: -0.5px;
+  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.25));
   transition: filter 0.3s ease;
 }
 
 .brand-logo-img {
-  width: 44px;
-  height: 44px;
+  width: 62px;
+  height: 62px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(37, 99, 235, 0.45));
+  filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.4));
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
 }
 
 .brand:hover .brand-logo-img {
-  transform: scale(1.12) rotate(6deg);
-  filter: drop-shadow(0 6px 18px rgba(37, 99, 235, 0.65));
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 6px 18px rgba(37, 99, 235, 0.6));
 }
 
 .brand:hover .brand-text {
-  filter: drop-shadow(0 3px 12px rgba(37, 99, 235, 0.55));
+  filter: drop-shadow(0 3px 12px rgba(37, 99, 235, 0.45));
 }
 
 .brand-accent {
-  background: linear-gradient(135deg, #2563eb 0%, #3675ee 50%, #60a5fa 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -159,19 +159,18 @@ body {
 }
 
 .sq-footer-brand {
-  font-family: 'Cinzel', 'Outfit', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+  font-family: 'Montserrat', var(--font-sans), sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #60a5fa 100%);
+  gap: 12px;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.35));
 }
 
 /* Nav Menu Items & Dropdowns */

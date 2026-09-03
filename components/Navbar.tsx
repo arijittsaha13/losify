@@ -38,9 +38,9 @@ export function Navbar() {
         <Link className="brand" href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
           <Image
             src="/images/logo-transparent.png"
-            alt="Losify Golden Logo"
-            width={44}
-            height={44}
+            alt="Losify Blue Logo"
+            width={62}
+            height={62}
             className="brand-logo-img"
             priority
           />

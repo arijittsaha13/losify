@@ -1,13 +1,9 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Navbar } from '../../components/Navbar';
-
 export default function AboutPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#ffffff', color: '#0f172a', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
-
       <main style={{ flex: 1, maxWidth: '1000px', width: '100%', margin: '0 auto', padding: '40px 24px 80px' }}>
         {/* Breadcrumb / Back Link */}
         <div style={{ marginBottom: '24px' }}>
@@ -29,13 +25,9 @@ export default function AboutPage() {
             />
           </div>
 
-          <h1 style={{ fontSize: '42px', fontWeight: 900, letterSpacing: '-1px', color: '#0f172a', margin: '0 0 12px 0', fontFamily: 'Montserrat, var(--font-sans), sans-serif' }}>
-            About LOS<span style={{ color: '#2563eb' }}>IFY</span>
+          <h1 style={{ fontSize: '38px', fontWeight: 500, letterSpacing: '-0.5px', color: '#2563eb', margin: '0 0 20px 0', fontFamily: 'Montserrat, var(--font-sans), sans-serif' }}>
+            About LOSIFY
           </h1>
-
-          <div style={{ display: 'inline-block', background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '6px 18px', borderRadius: '99px', fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '20px' }}>
-            Campus AI Lost &amp; Found Network • Version 1.0
-          </div>
 
           <p style={{ fontSize: '18px', color: '#475569', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
             The intelligent campus recovery platform powered by AI vision, verified Google accounts, and secure departmental custody.

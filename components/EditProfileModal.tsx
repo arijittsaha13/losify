@@ -118,22 +118,20 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
         justifyContent: 'center',
         padding: '20px',
       }}
-      onClick={onClose}
     >
       <div
         style={{
           background: '#ffffff',
           borderRadius: '24px',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.25)',
-          maxWidth: '520px',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)',
+          maxWidth: '540px',
           width: '100%',
-          maxHeight: '90vh',
+          maxHeight: '94vh',
           overflowY: 'auto',
-          padding: '32px',
+          padding: '28px 32px',
           color: '#0f172a',
           position: 'relative',
         }}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button

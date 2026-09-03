@@ -2,6 +2,7 @@
 import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getCurrentUser, logout, type User } from '../lib/authStore';
 
 export function Navbar() {
@@ -36,7 +37,15 @@ export function Navbar() {
       <nav className="sq-nav">
         {/* Brand Logo */}
         <Link className="brand" href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
-          LOS<span className="brand-accent">IFY</span>
+          <Image
+            src="/images/logo-transparent.png"
+            alt="Losify Golden Logo"
+            width={34}
+            height={34}
+            className="brand-logo-img"
+            priority
+          />
+          <span>LOS<span className="brand-accent">IFY</span></span>
         </Link>
 
         {/* Desktop Menu */}

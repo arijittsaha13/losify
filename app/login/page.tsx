@@ -2,6 +2,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { login, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
 import { GoogleAuthModal } from '../../components/GoogleAuthModal';
@@ -94,10 +95,14 @@ export default function LoginPage() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 20px 60px' }}>
         {/* Brand Emblem Logo Icon */}
         <div style={{ marginBottom: '16px' }}>
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 4L22.5 13.5L32 18L22.5 22.5L18 32L13.5 22.5L4 18L13.5 13.5L18 4Z" stroke="#111111" strokeWidth="2.5" strokeLinejoin="round" />
-            <circle cx="18" cy="18" r="4" fill="#111111" />
-          </svg>
+          <Image
+            src="/images/logo-transparent.png"
+            alt="Losify Logo"
+            width={52}
+            height={52}
+            style={{ objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(212, 175, 55, 0.4))' }}
+            priority
+          />
         </div>
 
         <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 6px 0', textAlign: 'center' }}>

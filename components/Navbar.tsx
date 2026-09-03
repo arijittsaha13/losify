@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -13,6 +13,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let prevUserJson = '';
@@ -29,9 +30,20 @@ export function Navbar() {
     return () => window.removeEventListener('authChange', update);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
     logout();
     setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
     startTransition(() => router.replace('/login'));
   };
 
@@ -80,9 +92,8 @@ export function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {/* Profile Tag with Hover & Click Popup Menu */}
               <div
+                ref={dropdownRef}
                 style={{ position: 'relative' }}
-                onMouseEnter={() => setProfileDropdownOpen(true)}
-                onMouseLeave={() => setProfileDropdownOpen(false)}
               >
                 <button
                   type="button"

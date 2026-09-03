@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signup, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
-import { GoogleAuthModal } from '../../components/GoogleAuthModal';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,11 +14,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
-
-  // State for Google Accounts 2-Step Sign-In Modal
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleModalEmail, setGoogleModalEmail] = useState('');
-  const [googleModalName, setGoogleModalName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,23 +44,26 @@ export default function SignupPage() {
     }
   };
 
-  const handleGoogleLoginClick = () => {
+  const handleGoogleLoginClick = async () => {
     setError(undefined);
-    if (typeof window !== 'undefined') {
-      const savedEmail = localStorage.getItem('losify_last_google_email') || '';
-      const savedName = localStorage.getItem('losify_last_google_name') || '';
-      if (savedEmail) {
-        setGoogleModalEmail(savedEmail);
-        setGoogleModalName(savedName);
-      }
-    }
-    setShowGoogleModal(true);
-  };
-
-  const handleGoogleAuthComplete = (userData: { email: string; name: string; registerId: string; role: 'student' | 'hod' }) => {
     try {
-      const user = completeGoogleRegistration(userData);
-      setShowGoogleModal(false);
+      const result = await signInWithPopup(auth, googleProvider);
+      const googleUser = result.user;
+      const userEmail = googleUser.email || '';
+      const userName = googleUser.displayName || userEmail.split('@')[0] || 'User';
+
+      if (!isGmailAddress(userEmail)) {
+        setError('Registration error: Only valid @gmail.com email addresses are allowed.');
+        return;
+      }
+
+      const user = completeGoogleRegistration({
+        email: userEmail,
+        name: userName,
+        registerId: `GOOG-${googleUser.uid.substring(0, 8)}`,
+        role,
+      });
+
       startTransition(() => {
         if (user.role === 'hod') {
           router.push('/hod');
@@ -75,7 +72,11 @@ export default function SignupPage() {
         }
       });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Google account registration failed');
+      console.error('Google signup OAuth:', err);
+      if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'Google registration failed');
     }
   };
 
@@ -253,16 +254,6 @@ export default function SignupPage() {
             Continue with Google (@gmail.com)
           </button>
         </div>
-
-        {/* Pixel-Perfect 2-Step Google Accounts Sign-In Modal */}
-        <GoogleAuthModal
-          isOpen={showGoogleModal}
-          onClose={() => setShowGoogleModal(false)}
-          onComplete={handleGoogleAuthComplete}
-          initialRole={role}
-          initialEmail={googleModalEmail}
-          initialName={googleModalName}
-        />
 
         <p style={{ marginTop: '36px', textAlign: 'center', fontSize: '13px', color: '#666666' }}>
           Already have an account? <Link href="/login" prefetch={true} style={{ color: '#111111', fontWeight: 800, textDecoration: 'none' }}>LOG IN HERE</Link>

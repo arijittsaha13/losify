@@ -82,10 +82,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#ffffff', color: '#111111', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--page-bg, #ffffff)', color: 'var(--text-main, #111111)', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header Bar */}
       <header style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '24px 40px' }}>
-        <Link href="/login" prefetch={true} style={{ textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
+        <Link href="/login" prefetch={true} style={{ textDecoration: 'none', color: 'var(--text-main, #111111)', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
           LOG IN
         </Link>
       </header>
@@ -103,7 +103,7 @@ export default function SignupPage() {
           />
         </div>
 
-        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 32px 0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-main, #111111)', margin: '0 0 32px 0', textAlign: 'center' }}>
           Create your Losify account
         </h1>
 

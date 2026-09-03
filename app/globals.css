@@ -21,6 +21,15 @@
   --sq-border:        rgba(69, 85, 119, 0.13);
   --sq-border-bright: rgba(54, 117, 238, 0.36);
   
+  --page-bg:          #ffffff;
+  --card-bg:          #ffffff;
+  --card-sub-bg:      #f8fafc;
+  --card-border:      #e2e8f0;
+  --text-main:        #0f172a;
+  --text-sub:         #475569;
+  --tab-bg:           #f4f4f5;
+  --tab-active-bg:    #ffffff;
+
   --font-serif: 'Montserrat', sans-serif;
   --font-sans: 'Montserrat', sans-serif;
 }
@@ -41,6 +50,15 @@ html[data-theme="dark"] {
   --sq-accent-yellow: #facc15;
   --sq-border:        rgba(255, 255, 255, 0.12);
   --sq-border-bright: rgba(59, 130, 246, 0.5);
+
+  --page-bg:          #090d16;
+  --card-bg:          #111827;
+  --card-sub-bg:      #1f2937;
+  --card-border:      rgba(255, 255, 255, 0.15);
+  --text-main:        #f8fafc;
+  --text-sub:         #94a3b8;
+  --tab-bg:           #1f2937;
+  --tab-active-bg:    #374151;
 }
 
 html[data-theme="dark"],

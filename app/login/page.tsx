@@ -81,10 +81,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#ffffff', color: '#111111', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--page-bg, #ffffff)', color: 'var(--text-main, #111111)', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header Bar */}
       <header style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '24px 40px' }}>
-        <Link href="/signup" prefetch={true} style={{ textDecoration: 'none', color: '#111111', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
+        <Link href="/signup" prefetch={true} style={{ textDecoration: 'none', color: 'var(--text-main, #111111)', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px' }}>
           CREATE ACCOUNT
         </Link>
       </header>
@@ -103,12 +103,12 @@ export default function LoginPage() {
           />
         </div>
 
-        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: '#111111', margin: '0 0 24px 0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-main, #111111)', margin: '0 0 24px 0', textAlign: 'center' }}>
           Log into Losify
         </h1>
 
         {/* Separate Role Tabs */}
-        <div style={{ display: 'flex', background: '#f4f4f5', padding: '4px', borderRadius: '12px', marginBottom: '28px', maxWidth: '380px', width: '100%' }}>
+        <div style={{ display: 'flex', background: 'var(--tab-bg, #f4f4f5)', padding: '4px', borderRadius: '12px', marginBottom: '28px', maxWidth: '380px', width: '100%' }}>
           <button
             type="button"
             onClick={() => handleRoleSwitch('student')}
@@ -117,8 +117,8 @@ export default function LoginPage() {
               padding: '10px 16px',
               borderRadius: '8px',
               border: 'none',
-              background: activeRole === 'student' ? '#ffffff' : 'transparent',
-              color: activeRole === 'student' ? '#0f172a' : '#64748b',
+              background: activeRole === 'student' ? 'var(--tab-active-bg, #ffffff)' : 'transparent',
+              color: activeRole === 'student' ? 'var(--text-main, #0f172a)' : 'var(--text-sub, #64748b)',
               fontWeight: 800,
               fontSize: '13px',
               cursor: 'pointer',

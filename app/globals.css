@@ -107,9 +107,10 @@ html[data-theme="dark"] ::placeholder {
 
 /* Navbar text links (No background box/square around text) */
 html[data-theme="dark"] .sq-menu-link,
-html[data-theme="dark"] .sq-nav-login-link {
+html[data-theme="dark"] .sq-menu-list a {
   color: #cbd5e1 !important;
   background: transparent !important;
+  background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
   border-radius: 0 !important;
@@ -117,15 +118,20 @@ html[data-theme="dark"] .sq-nav-login-link {
 
 html[data-theme="dark"] .sq-menu-link:hover,
 html[data-theme="dark"] .sq-menu-item:hover .sq-menu-link,
-html[data-theme="dark"] .sq-nav-login-link:hover {
+html[data-theme="dark"] .sq-menu-list a:hover {
   color: #60a5fa !important;
   background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none !important;
 }
 
-/* Sign Up button (Sleek black button in dark mode) */
+/* Log In & Sign Up buttons (Sleek black buttons in dark mode) */
+html[data-theme="dark"] .sq-nav-login-link,
 html[data-theme="dark"] .sq-nav-signup-btn,
 html[data-theme="dark"] .sq-btn-primary,
+html[data-theme="dark"] .sq-btn-secondary,
+html[data-theme="dark"] a[href="/signup"],
+html[data-theme="dark"] a[href="/login"],
 html[data-theme="dark"] button[type="submit"],
 html[data-theme="dark"] .btn.primary {
   background-color: #000000 !important;
@@ -135,14 +141,19 @@ html[data-theme="dark"] .btn.primary {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
 }
 
+html[data-theme="dark"] .sq-nav-login-link:hover,
 html[data-theme="dark"] .sq-nav-signup-btn:hover,
 html[data-theme="dark"] .sq-btn-primary:hover,
+html[data-theme="dark"] .sq-btn-secondary:hover,
+html[data-theme="dark"] a[href="/signup"]:hover,
+html[data-theme="dark"] a[href="/login"]:hover,
 html[data-theme="dark"] button[type="submit"]:hover,
 html[data-theme="dark"] .btn.primary:hover {
   background-color: #121824 !important;
   background: #121824 !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8) !important;
 }
 
 html[data-theme="dark"] .sq-btn-social,

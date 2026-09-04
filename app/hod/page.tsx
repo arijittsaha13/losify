@@ -117,12 +117,12 @@ export default function Hod() {
 
   return (
     <main className="section">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <span className="label">HOD CONTROL CENTER · AUTHENTICATED</span>
-          <h1 style={{ margin: '4px 0 0 0' }}>Campus collection desk</h1>
+          <h1>Campus collection desk</h1>
         </div>
-        <div>
+        <div style={{ textAlign: 'right' }}>
           <span className="pill" style={{ background: '#1479dc', color: '#fff' }}>
             🛡 {user.name} ({user.registerId})
           </span>
@@ -139,10 +139,10 @@ export default function Hod() {
       </div>
 
       <div className="glass card" style={{ marginTop: 20 }}>
-        <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <h2 style={{ margin: 0 }}>Pending collections</h2>
+        <div className="actions" style={{ justifyContent: 'space-between' }}>
+          <h2>Pending collections</h2>
           <input
-            style={{ maxWidth: 260, width: '100%' }}
+            style={{ maxWidth: 220 }}
             placeholder="Search student or item..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

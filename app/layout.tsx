@@ -16,12 +16,6 @@ export const metadata = {
   description: 'Ultra-futuristic AI-powered campus lost and found platform',
 };
 
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-};
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={montserrat.className}>

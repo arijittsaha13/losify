@@ -183,22 +183,20 @@ export function GoogleAuthModal({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
+        padding: '20px',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: 'calc(100vw - 24px)',
-          maxHeight: '90vh',
-          overflowY: 'auto',
+          maxWidth: '680px',
           backgroundColor: '#1e1e1e',
           borderRadius: '28px',
           border: '1px solid #2e2e2e',
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
           color: '#e3e3e3',
-          padding: '28px 24px',
+          padding: '40px 48px',
           position: 'relative',
         }}
       >

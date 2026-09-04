@@ -21,7 +21,7 @@ export function AboutAppModal({ isOpen, onClose }: AboutAppModalProps) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
+        padding: '20px',
       }}
     >
       <div
@@ -29,11 +29,11 @@ export function AboutAppModal({ isOpen, onClose }: AboutAppModalProps) {
           background: '#ffffff',
           borderRadius: '28px',
           boxShadow: '0 30px 70px rgba(37, 99, 235, 0.25)',
-          maxWidth: 'calc(100vw - 24px)',
-          width: '560px',
-          maxHeight: '90vh',
+          maxWidth: '560px',
+          width: '100%',
+          maxHeight: '92vh',
           overflowY: 'auto',
-          padding: '24px 20px',
+          padding: '36px',
           color: '#0f172a',
           position: 'relative',
           border: '1px solid #e2e8f0',

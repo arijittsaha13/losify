@@ -116,7 +116,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
+        padding: '20px',
       }}
     >
       <div
@@ -124,11 +124,11 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
           background: '#ffffff',
           borderRadius: '24px',
           boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)',
-          maxWidth: 'calc(100vw - 24px)',
-          width: '540px',
-          maxHeight: '90vh',
+          maxWidth: '540px',
+          width: '100%',
+          maxHeight: '94vh',
           overflowY: 'auto',
-          padding: '24px 20px',
+          padding: '28px 32px',
           color: '#0f172a',
           position: 'relative',
         }}

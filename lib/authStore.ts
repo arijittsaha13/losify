@@ -38,16 +38,21 @@ export function initUsers(): Array<User & { password?: string }> {
   if (typeof window === 'undefined') return [DEFAULT_HOD, DEFAULT_STUDENT];
   try {
     const saved = localStorage.getItem(USERS_KEY);
-    if (!saved) {
+    if (!saved || saved === 'undefined' || saved === 'null') {
       const initial = [DEFAULT_HOD, DEFAULT_STUDENT];
       localStorage.setItem(USERS_KEY, JSON.stringify(initial));
       return initial;
     }
     const parsed = JSON.parse(saved);
-    if (!parsed.some((u: any) => u.email.toLowerCase() === DEFAULT_HOD.email.toLowerCase())) {
+    if (!Array.isArray(parsed)) {
+      const initial = [DEFAULT_HOD, DEFAULT_STUDENT];
+      localStorage.setItem(USERS_KEY, JSON.stringify(initial));
+      return initial;
+    }
+    if (!parsed.some((u: any) => u && u.email && u.email.toLowerCase() === DEFAULT_HOD.email.toLowerCase())) {
       parsed.push(DEFAULT_HOD);
     }
-    if (!parsed.some((u: any) => u.email.toLowerCase() === DEFAULT_STUDENT.email.toLowerCase())) {
+    if (!parsed.some((u: any) => u && u.email && u.email.toLowerCase() === DEFAULT_STUDENT.email.toLowerCase())) {
       parsed.push(DEFAULT_STUDENT);
     }
     return parsed;
@@ -57,8 +62,9 @@ export function initUsers(): Array<User & { password?: string }> {
 }
 
 export function findUserByEmail(email: string): User | null {
+  if (!email) return null;
   const users = initUsers();
-  const found = users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+  const found = users.find((u) => u && u.email && u.email.toLowerCase() === email.trim().toLowerCase());
   if (!found) return null;
   const { password: _, ...userNoPass } = found as any;
   return userNoPass;
@@ -68,10 +74,23 @@ export function getCurrentUser(): User | null {
   if (typeof window === 'undefined') return null;
   try {
     const saved = localStorage.getItem(CURRENT_USER_KEY) || sessionStorage.getItem(CURRENT_USER_KEY);
-    if (!saved) {
+    if (!saved || saved === 'undefined' || saved === 'null') {
       return null;
     }
-    return JSON.parse(saved);
+    const parsed = JSON.parse(saved);
+    if (!parsed || typeof parsed !== 'object' || !parsed.email) {
+      return null;
+    }
+    return {
+      email: parsed.email,
+      name: parsed.name || 'Student',
+      registerId: parsed.registerId || 'STU-2026104',
+      role: parsed.role || 'student',
+      phone: parsed.phone || '',
+      department: parsed.department || '',
+      course: parsed.course || '',
+      avatar: parsed.avatar || '',
+    };
   } catch {
     return null;
   }

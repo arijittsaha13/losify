@@ -131,12 +131,12 @@ export function Navbar() {
                     }}
                   >
                     {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={user.avatar} alt={user.name || 'User'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      user.name.charAt(0).toUpperCase()
+                      (user.name || 'User').charAt(0).toUpperCase()
                     )}
                   </div>
-                  <span>{user.role === 'hod' ? `HOD: ${user.name.split(' ')[0]}` : user.name.split(' ')[0]}</span>
+                  <span>{user.role === 'hod' ? `HOD: ${(user.name || 'User').split(' ')[0]}` : (user.name || 'User').split(' ')[0]}</span>
                   <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
                 </button>
 
@@ -161,20 +161,20 @@ export function Navbar() {
                         }}
                       >
                         {user.avatar ? (
-                          <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={user.avatar} alt={user.name || 'User'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                          user.name.charAt(0).toUpperCase()
+                          (user.name || 'User').charAt(0).toUpperCase()
                         )}
                       </div>
                       <div style={{ overflow: 'hidden', textAlign: 'left' }}>
                         <div className="sq-popover-name" style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {user.name}
+                          {user.name || 'User'}
                         </div>
                         <div className="sq-popover-email" style={{ fontSize: '11px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {user.email}
+                          {user.email || ''}
                         </div>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', marginTop: '2px' }}>
-                          ID: {user.registerId}
+                          ID: {user.registerId || ''}
                         </div>
                       </div>
                     </div>

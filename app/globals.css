@@ -105,6 +105,46 @@ html[data-theme="dark"] ::placeholder {
   color: #9ca3af !important;
 }
 
+/* Navbar text links (No background box/square around text) */
+html[data-theme="dark"] .sq-menu-link,
+html[data-theme="dark"] .sq-nav-login-link {
+  color: #cbd5e1 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+html[data-theme="dark"] .sq-menu-link:hover,
+html[data-theme="dark"] .sq-menu-item:hover .sq-menu-link,
+html[data-theme="dark"] .sq-nav-login-link:hover {
+  color: #60a5fa !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Sign Up button (Sleek black button in dark mode) */
+html[data-theme="dark"] .sq-nav-signup-btn,
+html[data-theme="dark"] .sq-btn-primary,
+html[data-theme="dark"] button[type="submit"],
+html[data-theme="dark"] .btn.primary {
+  background-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+}
+
+html[data-theme="dark"] .sq-nav-signup-btn:hover,
+html[data-theme="dark"] .sq-btn-primary:hover,
+html[data-theme="dark"] button[type="submit"]:hover,
+html[data-theme="dark"] .btn.primary:hover {
+  background-color: #121824 !important;
+  background: #121824 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
 html[data-theme="dark"] .sq-btn-social,
 html[data-theme="dark"] button.sq-btn-social {
   background-color: #1f2937 !important;
@@ -126,10 +166,6 @@ html[data-theme="dark"] .sq-nav-wrapper {
 html[data-theme="dark"] .sq-nav {
   background: rgba(17, 24, 39, 0.95) !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-html[data-theme="dark"] .sq-menu-link {
-  color: #cbd5e1 !important;
 }
 
 html[data-theme="dark"] header a {
@@ -302,20 +338,65 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   color: var(--sq-ink-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 99px;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  transition: color 0.2s ease;
   cursor: pointer;
 }
 
 .sq-menu-link:hover,
 .sq-menu-item:hover .sq-menu-link {
-  color: var(--sq-accent-blue);
-  background: #edf3ff;
+  color: var(--sq-accent-blue) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sq-nav-login-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--sq-ink-primary);
+  text-decoration: none;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: color 0.2s ease;
+}
+
+.sq-nav-login-link:hover {
+  color: var(--sq-accent-blue) !important;
+  background: transparent !important;
+}
+
+.sq-nav-signup-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+}
+
+.sq-nav-signup-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
 .sq-menu-chevron {

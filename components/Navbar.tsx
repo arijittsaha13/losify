@@ -259,11 +259,11 @@ export function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="sq-desktop-only" style={{ display: 'flex', gap: 8 }}>
-              <Link href="/login" className="sq-btn sq-btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
+            <div className="sq-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Link href="/login" className="sq-nav-login-link">
                 Log In
               </Link>
-              <Link href="/signup" className="sq-btn sq-btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }}>
+              <Link href="/signup" className="sq-nav-signup-btn">
                 Sign Up
               </Link>
             </div>
@@ -360,40 +360,20 @@ export function Navbar() {
               </button>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <Link
                 href="/login"
+                className="sq-nav-login-link"
                 onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  flex: 1,
-                  textAlign: 'center',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  background: '#ffffff',
-                  color: '#0f172a',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  textDecoration: 'none',
-                }}
+                style={{ flex: 1, textAlign: 'center', justifyContent: 'center' }}
               >
                 Log In
               </Link>
               <Link
                 href="/signup"
+                className="sq-nav-signup-btn"
                 onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  flex: 1,
-                  textAlign: 'center',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: '#2563eb',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  textDecoration: 'none',
-                }}
+                style={{ flex: 1, textAlign: 'center' }}
               >
                 Sign Up
               </Link>

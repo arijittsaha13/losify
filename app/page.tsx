@@ -18,25 +18,8 @@ export default function Home() {
   useEffect(() => {
     const current = getCurrentUser();
     setUser(current);
-    setLoading(false);
-    if (!current) {
-      router.replace('/about');
-    } else {
-      setStats(getGlobalStats());
-    }
-  }, [router]);
-
-  if (loading || !user) {
-    return (
-      <main className="sq-hero">
-        <div className="glass" style={{ textAlign: 'center', padding: '60px 40px', maxWidth: '500px' }}>
-          <span className="sq-tag">CAMPUS LOST &amp; FOUND</span>
-          <h2 style={{ marginTop: '16px', fontSize: '28px', color: 'var(--sq-ink-primary)' }}>Redirecting to About…</h2>
-          <p style={{ color: 'var(--sq-ink-secondary)' }}>Welcome to Losify Campus AI Lost &amp; Found.</p>
-        </div>
-      </main>
-    );
-  }
+    setStats(getGlobalStats());
+  }, []);
 
   const faqs = [
     {

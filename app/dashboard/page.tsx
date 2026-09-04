@@ -20,7 +20,7 @@ export default function Dashboard() {
     const loadProfile = () => {
       const current = getCurrentUser();
       if (!current) {
-        router.replace('/login');
+        setTimeout(() => router.replace('/login'), 0);
         return;
       }
       const currentJson = JSON.stringify(current);

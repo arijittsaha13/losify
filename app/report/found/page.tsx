@@ -50,7 +50,7 @@ export default function Found() {
   useEffect(() => {
     const user = getCurrentUser();
     if (!user) {
-      router.replace('/login');
+      setTimeout(() => router.replace('/login'), 0);
     }
   }, [router]);
 

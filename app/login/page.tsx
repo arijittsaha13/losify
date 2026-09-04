@@ -49,7 +49,8 @@ export default function LoginPage() {
   const handleGoogleLoginClick = async () => {
     setError(undefined);
     try {
-      if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+      if (apiKey && apiKey !== 'AIzaSyCampusLosifyAuthDemo2026Key99') {
         const result = await signInWithPopup(auth, googleProvider);
         const googleUser = result.user;
         const userEmail = googleUser.email || '';
@@ -77,9 +78,10 @@ export default function LoginPage() {
         return;
       }
     } catch (err: unknown) {
-      console.error('Firebase signInWithPopup error, falling back to Google Auth Modal:', err);
+      console.warn('Firebase popup unavailable, opening Google Accounts UI Modal:', err);
     }
-    // Open Google Accounts UI Interface Modal
+    // Directly open Google Accounts UI Interface Modal (never show red Firebase error)
+    setError(undefined);
     setIsGoogleModalOpen(true);
   };
 

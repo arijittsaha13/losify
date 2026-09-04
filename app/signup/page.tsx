@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { signup, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
+import { GoogleAuthModal } from '../../components/GoogleAuthModal';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,37 +50,48 @@ export default function SignupPage() {
   const handleGoogleLoginClick = async () => {
     setError(undefined);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const googleUser = result.user;
-      const userEmail = googleUser.email || '';
-      const userName = googleUser.displayName || userEmail.split('@')[0] || 'User';
+      if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+        const result = await signInWithPopup(auth, googleProvider);
+        const googleUser = result.user;
+        const userEmail = googleUser.email || '';
+        const userName = googleUser.displayName || userEmail.split('@')[0] || 'User';
 
-      if (!isGmailAddress(userEmail)) {
-        setError('Registration error: Only valid @gmail.com email addresses are allowed.');
-        return;
-      }
-
-      const user = completeGoogleRegistration({
-        email: userEmail,
-        name: userName,
-        registerId: `GOOG-${googleUser.uid.substring(0, 8)}`,
-        role,
-      });
-
-      startTransition(() => {
-        if (user.role === 'hod') {
-          router.push('/hod');
-        } else {
-          router.push('/dashboard');
+        if (!isGmailAddress(userEmail)) {
+          setError('Registration error: Only valid @gmail.com email addresses are allowed.');
+          return;
         }
-      });
-    } catch (err: unknown) {
-      console.error('Google signup OAuth:', err);
-      if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/popup-closed-by-user') {
+
+        const user = completeGoogleRegistration({
+          email: userEmail,
+          name: userName,
+          registerId: `GOOG-${googleUser.uid.substring(0, 8)}`,
+          role,
+        });
+
+        startTransition(() => {
+          if (user.role === 'hod') {
+            router.push('/hod');
+          } else {
+            router.push('/dashboard');
+          }
+        });
         return;
       }
-      setError(err instanceof Error ? err.message : 'Google registration failed');
+    } catch (err: unknown) {
+      console.error('Firebase signInWithPopup error, falling back to Google Auth Modal:', err);
     }
+    setIsGoogleModalOpen(true);
+  };
+
+  const handleGoogleAuthComplete = (userData: { email: string; name: string; registerId: string; role: 'student' | 'hod' }) => {
+    setIsGoogleModalOpen(false);
+    startTransition(() => {
+      if (userData.role === 'hod') {
+        router.push('/hod');
+      } else {
+        router.push('/dashboard');
+      }
+    });
   };
 
   return (
@@ -258,6 +271,13 @@ export default function SignupPage() {
           Already have an account? <Link href="/login" prefetch={true} style={{ color: '#111111', fontWeight: 800, textDecoration: 'none' }}>LOG IN HERE</Link>
         </p>
       </main>
+
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onComplete={handleGoogleAuthComplete}
+        initialRole={role}
+      />
     </div>
   );
 }

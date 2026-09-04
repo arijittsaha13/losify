@@ -24,14 +24,14 @@ export const analysisSchema = z.object({
   title: safeString('Item'),
   name: safeString('Item'),
   itemType: safeString('Item'),
-  category: safeString('Electronics'),
-  brand: safeString('Apple'),
-  color: safeString('Black'),
+  category: safeString('Other'),
+  brand: safeString(''),
+  color: safeString(''),
   condition: safeString('Good'),
   estimatedCondition: safeString('Good'),
-  model: safeString('Standard'),
+  model: safeString(''),
   visibleText: safeString('None'),
-  description: safeString('Visual item description'),
+  description: safeString(''),
   distinctiveFeatures: safeString('None'),
   date: safeString(''),
   time: safeString(''),
@@ -60,12 +60,18 @@ export function cleanItemName(rawName: string, color: string, brand: string): st
     name = name.replace(regex, '');
   }
 
-  // Ensure brand is attached cleanly if not present
-  if (brand && brand !== 'Generic' && brand !== 'Campus' && !name.toLowerCase().includes(brand.toLowerCase())) {
+  // Ensure brand is attached cleanly only if valid and not already present
+  if (
+    brand &&
+    brand !== 'Generic' &&
+    brand !== 'Campus' &&
+    brand !== 'Unknown' &&
+    !name.toLowerCase().includes(brand.toLowerCase())
+  ) {
     name = `${brand} ${name}`;
   }
 
-  return name.trim() || 'Smart Item';
+  return name.trim() || 'Item';
 }
 
 /**
@@ -75,11 +81,11 @@ export function cleanItemName(rawName: string, color: string, brand: string): st
 export function smartClassifyItem(imageData: string, fileName: string = ''): ItemAnalysis {
   const cleanName = fileName.toLowerCase().replace(/[^a-z0-9\s_-]/g, ' ');
 
-  let name = 'Apple iPhone';
-  let category: typeof CATEGORIES[number] = 'Electronics';
-  let brand = 'Apple';
-  let color = 'Purple';
-  let description = 'Apple iPhone smartphone with dual-camera system in protective clear case.';
+  let name = '';
+  let category: typeof CATEGORIES[number] = 'Other';
+  let brand = '';
+  let color = '';
+  let description = 'Item photo uploaded. Please verify and fill in any missing details.';
 
   // iPhone models recognition
   if (/\b(ip16|iphone\s*16|iphone16)\b/i.test(cleanName)) {
@@ -178,16 +184,16 @@ export function smartClassifyItem(imageData: string, fileName: string = ''): Ite
     description = 'Academic study textbook / notebook.';
   } else {
     // Dynamic fallback from filename
-    const words = cleanName.split(/\s+/).filter(w => w.length > 2 && !['jpg', 'jpeg', 'png', 'webp', 'img', 'photo'].includes(w));
+    const words = cleanName.split(/\s+/).filter(w => w.length > 2 && !['jpg', 'jpeg', 'png', 'webp', 'img', 'photo', 'screenshot', 'image', '8k', '4k', '7680x4320'].includes(w));
     if (words.length > 0) {
       name = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     } else {
-      name = 'Apple iPhone';
+      name = 'Found Item';
     }
-    category = 'Electronics';
-    brand = 'Apple';
-    color = 'Purple';
-    description = 'Light purple Apple iPhone smartphone inside clear MagSafe protective case.';
+    category = 'Other';
+    brand = '';
+    color = '';
+    description = 'Item photo uploaded. Please verify and fill in details.';
   }
 
   // Detect colors in filename
@@ -202,15 +208,15 @@ export function smartClassifyItem(imageData: string, fileName: string = ''): Ite
   const finalName = cleanItemName(name, color, brand);
 
   return {
-    title: finalName,
-    name: finalName,
-    itemType: finalName,
+    title: finalName || 'Found Item',
+    name: finalName || 'Found Item',
+    itemType: finalName || 'Found Item',
     category,
     brand,
     color,
     condition: 'Good',
     estimatedCondition: 'Good',
-    model: finalName,
+    model: finalName || '',
     visibleText: 'None',
     description,
     distinctiveFeatures: 'None',
@@ -222,7 +228,7 @@ export function smartClassifyItem(imageData: string, fileName: string = ''): Ite
 const SYSTEM_INSTRUCTION = `You are an expert AI lost-and-found item classifier. Analyze the provided image carefully.
 Ensure ALL fields are populated with exact, factual details:
 - name/title: exact item Brand and Model WITHOUT color words (e.g. "Apple iPhone 14", "Apple iPhone 15 Pro", "Samsung Galaxy S23", "Sony WH-1000XM4", "Nike Heritage Backpack"). DO NOT put colors in the name field.
-- brand: specific manufacturer or brand name (e.g. Apple, Samsung, Sony, OnePlus, Boat, Nike, Adidas, Dell, HP).
+- brand: specific manufacturer or brand name (e.g. Apple, Samsung, Sony, OnePlus, Boat, Nike, Adidas, Dell, HP, or "Generic" if unknown).
 - color: exact primary visual color (e.g. Purple, Black, White, Blue, Silver, Gold, Red, Green, Pink). Color belongs strictly in the color field.
 - category: MUST be accurately chosen from: Electronics, Backpack, Wallet, ID Card, Keys, Clothing, Books, Accessories, Documents, Other. Wireless earbuds/phones/laptops are ALWAYS "Electronics".
 - description: short 1-2 sentence visual summary describing the item, model, color and protective case if any.`;
@@ -230,7 +236,7 @@ Ensure ALL fields are populated with exact, factual details:
 const PROMPT = `Identify this item image accurately. Return structured JSON with all fields populated:
 - name: exact item Brand and Model WITHOUT color words (e.g. "Apple iPhone 14", "Apple iPhone 15 Pro", "Samsung Galaxy S23", "Sony WH-1000XM4")
 - title: exact item Brand and Model
-- brand: manufacturer brand name (e.g. "Apple", "Samsung", "Nike", "Sony", "OnePlus", "Boat")
+- brand: manufacturer brand name (e.g. "Apple", "Samsung", "Nike", "Sony", "OnePlus", "Boat", or "Generic")
 - color: primary visual color (e.g. "Purple", "Black", "White", "Blue", "Silver", "Gold")
 - category: one of Electronics, Backpack, Wallet, ID Card, Keys, Clothing, Books, Accessories, Documents, Other
 - description: 1-2 sentence clear description describing the item, model, color and case`;
@@ -290,9 +296,8 @@ export async function analyzeItem(imageData: string, fileName: string = ''): Pro
 
   const models = [
     process.env.GEMINI_MODEL,
-    'gemini-2.5-flash',
-    'gemini-3.5-flash-lite',
-    'gemini-2.5-flash-lite',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
     'gemini-flash-latest',
   ].filter(Boolean) as string[];
 
@@ -326,7 +331,11 @@ export async function analyzeItem(imageData: string, fileName: string = ''): Pro
         body: JSON.stringify(body),
       }, 15000);
 
-      if (!r.ok) continue;
+      if (!r.ok) {
+        const errText = await r.text().catch(() => '');
+        console.warn(`[analyzeItem] ${modelId} returned ${r.status}: ${errText.slice(0, 120)}`);
+        continue;
+      }
 
       const json = await r.json();
       const raw: string | undefined = json?.candidates?.[0]?.text || json?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -343,7 +352,8 @@ export async function analyzeItem(imageData: string, fileName: string = ''): Pro
       result.model = cleanName;
 
       return result;
-    } catch {
+    } catch (err) {
+      console.warn(`[analyzeItem] ${modelId} error:`, err);
       continue;
     }
   }

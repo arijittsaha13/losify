@@ -73,7 +73,8 @@ export function findUserByEmail(email: string): User | null {
 export function getCurrentUser(): User | null {
   if (typeof window === 'undefined') return null;
   try {
-    const saved = localStorage.getItem(CURRENT_USER_KEY) || sessionStorage.getItem(CURRENT_USER_KEY);
+    // Only read from sessionStorage so sessions expire when browser/tab is closed
+    const saved = sessionStorage.getItem(CURRENT_USER_KEY);
     if (!saved || saved === 'undefined' || saved === 'null') {
       return null;
     }
@@ -81,15 +82,18 @@ export function getCurrentUser(): User | null {
     if (!parsed || typeof parsed !== 'object' || !parsed.email) {
       return null;
     }
+    // Merge with persisted user data from localStorage to get latest profile (registerId, phone, etc.)
+    const allUsers = initUsers();
+    const persisted = allUsers.find((u) => u.email && u.email.toLowerCase() === parsed.email.toLowerCase());
     return {
       email: parsed.email,
-      name: parsed.name || 'Student',
-      registerId: parsed.registerId || 'STU-2026104',
-      role: parsed.role || 'student',
-      phone: parsed.phone || '',
-      department: parsed.department || '',
-      course: parsed.course || '',
-      avatar: parsed.avatar || '',
+      name: persisted?.name || parsed.name || 'Student',
+      registerId: persisted?.registerId || parsed.registerId || 'STU-2026104',
+      role: persisted?.role || parsed.role || 'student',
+      phone: persisted?.phone || parsed.phone || '',
+      department: persisted?.department || parsed.department || '',
+      course: persisted?.course || parsed.course || '',
+      avatar: persisted?.avatar || parsed.avatar || '',
     };
   } catch {
     return null;
@@ -116,7 +120,7 @@ export function login(email: string, pass: string, expectedRole?: 'student' | 'h
 
   const { password: _, ...userNoPass } = found;
   if (typeof window !== 'undefined') {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+    // Session only in sessionStorage (clears on tab/browser close). Do NOT persist to localStorage.
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -157,7 +161,7 @@ export function signup(data: {
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
     const { password: _, ...userNoPass } = newUser;
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+    // Session only in sessionStorage (clears on tab/browser close)
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     window.dispatchEvent(new Event('authChange'));
     return userNoPass;
@@ -190,7 +194,7 @@ export function loginWithFirebaseUser(
     }
     const { password: _, ...userNoPass } = existing;
     if (typeof window !== 'undefined') {
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
+      // Session only in sessionStorage (clears on tab/browser close)
       sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
       window.dispatchEvent(new Event('authChange'));
     }
@@ -215,7 +219,7 @@ export function loginWithFirebaseUser(
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+    // Session only in sessionStorage (clears on tab/browser close)
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -259,7 +263,7 @@ export function completeGoogleRegistration(data: {
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+    // Session only in sessionStorage (clears on tab/browser close)
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -292,7 +296,7 @@ export function updateUserProfile(updates: Partial<Omit<User, 'email' | 'role'>>
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+    // Session only in sessionStorage (clears on tab/browser close)
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -303,6 +307,7 @@ export function updateUserProfile(updates: Partial<Omit<User, 'email' | 'role'>>
 export function logout() {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem(CURRENT_USER_KEY);
+    // Also clean up any stale localStorage session key from old versions
     localStorage.removeItem(CURRENT_USER_KEY);
     window.dispatchEvent(new Event('authChange'));
   }

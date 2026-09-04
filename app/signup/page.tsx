@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { signup, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
+import { GoogleAuthModal } from '../../components/GoogleAuthModal';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,12 +75,23 @@ export default function SignupPage() {
         }
       });
     } catch (err: unknown) {
-      console.error('Google signup OAuth:', err);
+      console.error('Google signup OAuth error, falling back to Google Auth Modal:', err);
       if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/popup-closed-by-user') {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Google registration failed');
+      setIsGoogleModalOpen(true);
     }
+  };
+
+  const handleGoogleAuthComplete = (userData: { email: string; name: string; registerId: string; role: 'student' | 'hod' }) => {
+    setIsGoogleModalOpen(false);
+    startTransition(() => {
+      if (userData.role === 'hod') {
+        router.push('/hod');
+      } else {
+        router.push('/dashboard');
+      }
+    });
   };
 
   return (
@@ -258,6 +271,13 @@ export default function SignupPage() {
           Already have an account? <Link href="/login" prefetch={true} style={{ color: '#111111', fontWeight: 800, textDecoration: 'none' }}>LOG IN HERE</Link>
         </p>
       </main>
+
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onComplete={handleGoogleAuthComplete}
+        initialRole={role}
+      />
     </div>
   );
 }

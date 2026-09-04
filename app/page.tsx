@@ -19,7 +19,10 @@ export default function Home() {
     const current = getCurrentUser();
     setUser(current);
     setStats(getGlobalStats());
-  }, []);
+    if (current) {
+      setTimeout(() => router.replace('/dashboard'), 0);
+    }
+  }, [router]);
 
   const faqs = [
     {

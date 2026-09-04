@@ -93,37 +93,28 @@ export function AboutAppModal({ isOpen, onClose }: AboutAppModalProps) {
         {/* Key Details Grid */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
           <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', background: '#f8fafc', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-            <div style={{ fontSize: '24px', background: '#eff6ff', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              🤖
-            </div>
             <div>
               <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
                 AI Visual &amp; Text Matching
               </h4>
               <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
-                Our Gemini AI engine automatically analyzes images, item categories, color profiles, and location data to match lost reports against found listings instantly.
+                Our Gemini AI engine automatically analyzes images, item categories, color profiles and location data to match lost reports against found listings instantly.
               </p>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', background: '#f8fafc', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-            <div style={{ fontSize: '24px', background: '#f0fdf4', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              🛡
-            </div>
             <div>
               <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
                 Verified Gmail &amp; HOD Control Desk
               </h4>
               <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
-                Strict account verification for verified campus accounts. Dedicated HOD Admin desk for institutional oversight, item approvals, and official handovers.
+                Strict account verification for verified campus accounts. Dedicated HOD Admin desk for institutional oversight, item approvals and official handovers.
               </p>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', background: '#f8fafc', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-            <div style={{ fontSize: '24px', background: '#faf5ff', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              ⚡
-            </div>
             <div>
               <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
                 Instant Match Notifications

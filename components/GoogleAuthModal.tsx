@@ -291,9 +291,6 @@ export function GoogleAuthModal({
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a2a2a')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e1e')}
                 >
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid #5f6368', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', color: '#9aa0a6' }}>
-                    👤
-                  </div>
                   <span>Use another account</span>
                 </button>
               )}

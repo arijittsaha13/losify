@@ -163,7 +163,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
             Edit Profile
           </h2>
           <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-            Update your personal details, campus register ID, and photo.
+            Update your personal details, campus register ID and photo.
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                   cursor: 'pointer',
                 }}
               >
-                📷 Change Photo
+                Change Photo
               </button>
               {avatar && (
                 <button

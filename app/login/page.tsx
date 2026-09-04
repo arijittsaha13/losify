@@ -130,7 +130,7 @@ export default function LoginPage() {
               gap: '6px',
             }}
           >
-            🎓 Student Login
+            Student Login
           </button>
           <button
             type="button"
@@ -153,7 +153,7 @@ export default function LoginPage() {
               gap: '6px',
             }}
           >
-            🛡 HOD Login
+            HOD Login
           </button>
         </div>
 
@@ -189,10 +189,10 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666666', fontSize: '16px', padding: 0 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666666', fontSize: '12px', fontWeight: 700, padding: 0 }}
                   title={showPassword ? 'Hide Password' : 'Show Password'}
                 >
-                  👁
+                  {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
               <input

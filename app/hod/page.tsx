@@ -54,7 +54,7 @@ export default function Hod() {
   if (!user || user.role !== 'hod') {
     return (
       <main className="form glass" style={{ maxWidth: 480, margin: '40px auto' }}>
-        <span className="label" style={{ color: '#d93025' }}>🔒 ACCESS RESTRICTED</span>
+        <span className="label" style={{ color: '#d93025' }}>ACCESS RESTRICTED</span>
         <h1>HOD Authentication Required</h1>
         <p className="muted">
           The HOD Control Center is restricted to authorized administration accounts. Please log in with your HOD credentials.
@@ -124,7 +124,7 @@ export default function Hod() {
         </div>
         <div style={{ textAlign: 'right' }}>
           <span className="pill" style={{ background: '#1479dc', color: '#fff' }}>
-            🛡 {user.name} ({user.registerId})
+            HOD: {user.name} ({user.registerId})
           </span>
         </div>
       </div>

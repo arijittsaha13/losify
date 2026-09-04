@@ -118,9 +118,7 @@ export function ThemeSwitcher() {
               transition: 'all 0.15s ease',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>☀️</span> Light Mode
-            </span>
+            <span>Light Mode</span>
             {theme === 'light' && <span>✓</span>}
           </button>
 
@@ -144,9 +142,7 @@ export function ThemeSwitcher() {
               transition: 'all 0.15s ease',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>🌙</span> Dark Mode
-            </span>
+            <span>Dark Mode</span>
             {theme === 'dark' && <span>✓</span>}
           </button>
 
@@ -170,9 +166,7 @@ export function ThemeSwitcher() {
               transition: 'all 0.15s ease',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>💻</span> System Default
-            </span>
+            <span>System Default</span>
             {theme === 'system' && <span>✓</span>}
           </button>
         </div>
@@ -199,9 +193,8 @@ export function ThemeSwitcher() {
         }}
         title="Switch Theme Appearance (Light, Dark, System)"
       >
-        <span style={{ fontSize: '15px' }}>{getIcon(theme)}</span>
         <span style={{ textTransform: 'capitalize' }}>
-          {theme === 'system' ? 'System' : theme}
+          {theme === 'system' ? 'Theme: System' : `Theme: ${theme}`}
         </span>
         <span style={{ fontSize: '10px', opacity: 0.7 }}>{isOpen ? '▲' : '▼'}</span>
       </button>

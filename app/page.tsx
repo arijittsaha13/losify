@@ -41,7 +41,7 @@ export default function Home() {
   const faqs = [
     {
       q: 'How does Losify match lost and found items?',
-      a: 'Losify compares uploaded photos and text descriptions, extracting color, brand, item type, and location features to calculate a visual confidence score.'
+      a: 'Losify compares uploaded photos and text descriptions, extracting color, brand, item type and location features to calculate a visual confidence score.'
     },
     {
       q: 'Is my personal contact details kept private?',
@@ -61,12 +61,12 @@ export default function Home() {
     <main className="losify-home">
       {/* HERO SECTION */}
       <section className="sq-hero">
-        <span className="sq-tag">● CAMPUS RECOVERY NETWORK · ONLINE</span>
+        <span className="sq-tag">CAMPUS RECOVERY NETWORK · ONLINE</span>
         <h1 className="sq-hero-title">
           LOST DOESN’T HAVE TO MEAN GONE.
         </h1>
         <p className="sq-hero-subtitle">
-          Losify blends visual AI intelligence, campus HOD verification, and real-time alerts to reunite lost belongings with their rightful owners in record time.
+          Losify blends visual AI intelligence, campus HOD verification and real-time alerts to reunite lost belongings with their rightful owners in record time.
         </p>
 
         <div className="sq-hero-actions">
@@ -184,44 +184,38 @@ export default function Home() {
         <div className="sq-section-header">
           <span className="sq-tag">POWERFUL FEATURES</span>
           <h2 className="sq-section-title">Everything You Need to Find Anything</h2>
-          <p className="sq-section-desc">Built for modern universities with privacy, accuracy, and efficiency at the core.</p>
+          <p className="sq-section-desc">Built for modern universities with privacy, accuracy and efficiency at the core.</p>
         </div>
 
         <div className="sq-feature-grid">
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">👁</div>
             <h3 className="sq-feature-title">Smart Visual Matching</h3>
-            <p className="sq-feature-text">Neural visual similarity scoring detects matching logos, colors, and physical item characteristics.</p>
+            <p className="sq-feature-text">Neural visual similarity scoring detects matching logos, colors and physical item characteristics.</p>
           </div>
 
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">🛡</div>
             <h3 className="sq-feature-title">HOD Secure Custody</h3>
             <p className="sq-feature-text">Found items are stored safely with department heads until ownership is verified.</p>
           </div>
 
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">⚡</div>
             <h3 className="sq-feature-title">Instant Alerts</h3>
             <p className="sq-feature-text">Real-time notifications wake up as soon as a potential candidate item enters the database.</p>
           </div>
 
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">🔒</div>
             <h3 className="sq-feature-title">Privacy Protection</h3>
             <p className="sq-feature-text">Personal student details remain secret. Only authorized claims generate release tokens.</p>
           </div>
 
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">🗺</div>
             <h3 className="sq-feature-title">Campus Geo-Pinning</h3>
-            <p className="sq-feature-text">Pin drop locations across libraries, science labs, food courts, and lecture halls.</p>
+            <p className="sq-feature-text">Pin drop locations across libraries, science labs, food courts and lecture halls.</p>
           </div>
 
           <div className="glass sq-feature-card">
-            <div className="sq-feature-icon">📊</div>
             <h3 className="sq-feature-title">Real-Time Audit</h3>
-            <p className="sq-feature-text">Track statistics on item recovery timelines, accuracy rates, and active claims.</p>
+            <p className="sq-feature-text">Track statistics on item recovery timelines, accuracy rates and active claims.</p>
           </div>
         </div>
       </section>

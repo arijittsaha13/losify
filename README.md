@@ -1,10 +1,10 @@
 # Losify
 
-An iOS-inspired AI campus Lost & Found prototype built with Next.js, TypeScript, Prisma, MongoDB, and a server-side Groq integration.
+An iOS-inspired AI campus Lost & Found prototype built with Next.js, TypeScript, Prisma, MongoDB and a server-side Groq integration.
 
 ## Run locally
 
-1. Copy `.env.example` to `.env` and set `DATABASE_URL`, `HOD_EMAIL`, and (optionally) `GROQ_API_KEY`.
+1. Copy `.env.example` to `.env` and set `DATABASE_URL`, `HOD_EMAIL` and (optionally) `GROQ_API_KEY`.
 2. Create a MongoDB Atlas deployment and database named `losify`. Replace the `DATABASE_URL` placeholder in `.env` with its MongoDB connection string. Allow your local IP address in Atlas Network Access.
 3. Run `npx prisma generate` and `npx prisma db push` to generate the client and create the collections/indexes.
 4. Run `npm install` and `npm run dev`.

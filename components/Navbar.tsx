@@ -150,7 +150,7 @@ export function Navbar() {
                       user.name.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <span>{user.role === 'hod' ? `🛡 ${user.name.split(' ')[0]}` : user.name.split(' ')[0]}</span>
+                  <span>{user.role === 'hod' ? `HOD: ${user.name.split(' ')[0]}` : user.name.split(' ')[0]}</span>
                   <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
                 </button>
 
@@ -235,7 +235,7 @@ export function Navbar() {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      ✏ Edit Profile
+                      Edit Profile
                     </button>
 
                     <button
@@ -258,7 +258,7 @@ export function Navbar() {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      🚪 Log Out
+                      Log Out
                     </button>
                   </div>
                 )}
@@ -314,16 +314,16 @@ export function Navbar() {
           }}
         >
           <Link href="/dashboard" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
-            📊 Live Dashboard
+            Live Dashboard
           </Link>
           <Link href="/report/lost" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
-            🔍 Report Lost Item
+            Report Lost Item
           </Link>
           <Link href="/report/found" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
-            📦 Report Found Item
+            Report Found Item
           </Link>
           <Link href="/hod" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
-            🛡 HOD Desk
+            HOD Desk
           </Link>
           <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '4px 0' }} />
           {user ? (
@@ -345,7 +345,7 @@ export function Navbar() {
                   cursor: 'pointer',
                 }}
               >
-                ✏ Edit Profile ({user.name})
+                Edit Profile ({user.name})
               </button>
               <button
                 onClick={handleLogout}

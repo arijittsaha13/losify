@@ -136,7 +136,7 @@ export default function SignupPage() {
                 onClick={() => setRole('student')}
                 disabled={isPending}
               >
-                🎓 Student
+                Student
               </button>
               <button
                 type="button"
@@ -155,7 +155,7 @@ export default function SignupPage() {
                 onClick={() => setRole('hod')}
                 disabled={isPending}
               >
-                🛡 HOD Administration
+                HOD Administration
               </button>
             </div>
           </div>

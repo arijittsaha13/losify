@@ -70,7 +70,7 @@ export function cleanItemName(rawName: string, color: string, brand: string): st
 
 /**
  * Smart visual & filename AI classifier fallback.
- * Accurately detects item model, brand, color, category, and description.
+ * Accurately detects item model, brand, color, category and description.
  */
 export function smartClassifyItem(imageData: string, fileName: string = ''): ItemAnalysis {
   const cleanName = fileName.toLowerCase().replace(/[^a-z0-9\s_-]/g, ' ');
@@ -225,7 +225,7 @@ Ensure ALL fields are populated with exact, factual details:
 - brand: specific manufacturer or brand name (e.g. Apple, Samsung, Sony, OnePlus, Boat, Nike, Adidas, Dell, HP).
 - color: exact primary visual color (e.g. Purple, Black, White, Blue, Silver, Gold, Red, Green, Pink). Color belongs strictly in the color field.
 - category: MUST be accurately chosen from: Electronics, Backpack, Wallet, ID Card, Keys, Clothing, Books, Accessories, Documents, Other. Wireless earbuds/phones/laptops are ALWAYS "Electronics".
-- description: short 1-2 sentence visual summary describing the item, model, color, and protective case if any.`;
+- description: short 1-2 sentence visual summary describing the item, model, color and protective case if any.`;
 
 const PROMPT = `Identify this item image accurately. Return structured JSON with all fields populated:
 - name: exact item Brand and Model WITHOUT color words (e.g. "Apple iPhone 14", "Apple iPhone 15 Pro", "Samsung Galaxy S23", "Sony WH-1000XM4")
@@ -233,7 +233,7 @@ const PROMPT = `Identify this item image accurately. Return structured JSON with
 - brand: manufacturer brand name (e.g. "Apple", "Samsung", "Nike", "Sony", "OnePlus", "Boat")
 - color: primary visual color (e.g. "Purple", "Black", "White", "Blue", "Silver", "Gold")
 - category: one of Electronics, Backpack, Wallet, ID Card, Keys, Clothing, Books, Accessories, Documents, Other
-- description: 1-2 sentence clear description describing the item, model, color, and case`;
+- description: 1-2 sentence clear description describing the item, model, color and case`;
 
 const responseSchema = {
   type: 'OBJECT',

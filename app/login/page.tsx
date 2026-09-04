@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { login, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
-import { GoogleAuthModal } from '../../components/GoogleAuthModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
-  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   const handleRoleSwitch = (role: 'student' | 'hod') => {
     setActiveRole(role);
@@ -74,23 +72,12 @@ export default function LoginPage() {
         }
       });
     } catch (err: unknown) {
-      console.error('Google OAuth error, falling back to Google Auth Modal:', err);
+      console.error('Google OAuth error:', err);
       if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/popup-closed-by-user') {
         return;
       }
-      setIsGoogleModalOpen(true);
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
     }
-  };
-
-  const handleGoogleAuthComplete = (userData: { email: string; name: string; registerId: string; role: 'student' | 'hod' }) => {
-    setIsGoogleModalOpen(false);
-    startTransition(() => {
-      if (userData.role === 'hod') {
-        router.push('/hod');
-      } else {
-        router.push('/dashboard');
-      }
-    });
   };
 
   return (
@@ -272,13 +259,6 @@ export default function LoginPage() {
           NEED AN ACCOUNT? SIGN UP HERE
         </Link>
       </main>
-
-      <GoogleAuthModal
-        isOpen={isGoogleModalOpen}
-        onClose={() => setIsGoogleModalOpen(false)}
-        onComplete={handleGoogleAuthComplete}
-        initialRole={activeRole}
-      />
     </div>
   );
 }

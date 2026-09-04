@@ -84,6 +84,20 @@ export function Navbar() {
               HOD Control Desk
             </Link>
           </li>
+          {!user && (
+            <>
+              <li className="sq-menu-item sq-desktop-only">
+                <Link href="/login" className="sq-menu-link">
+                  Log In
+                </Link>
+              </li>
+              <li className="sq-menu-item sq-desktop-only">
+                <Link href="/signup" className="sq-menu-link">
+                  Sign Up
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
 
         {/* Right Nav Action Buttons & Mobile Toggle */}
@@ -258,16 +272,7 @@ export function Navbar() {
                 Log Out
               </button>
             </div>
-          ) : (
-            <div className="sq-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Link href="/login" className="sq-menu-link">
-                Log In
-              </Link>
-              <Link href="/signup" className="sq-menu-link">
-                Sign Up
-              </Link>
-            </div>
-          )}
+          ) : null}
 
           {/* Mobile Hamburger Toggle Button */}
           <button

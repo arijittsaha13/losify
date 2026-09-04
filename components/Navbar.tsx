@@ -112,21 +112,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '5px 14px 5px 6px',
-                    borderRadius: '99px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    background: user.role === 'hod' ? 'linear-gradient(135deg, #0f172a, #1e293b)' : '#ffffff',
-                    color: user.role === 'hod' ? '#ffffff' : '#0f172a',
-                    border: '1.5px solid #cbd5e1',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
+                  className="sq-nav-user-btn"
                 >
                   <div
                     style={{
@@ -156,24 +142,7 @@ export function Navbar() {
 
                 {/* Profile Popup Menu on Hover / Click */}
                 {profileDropdownOpen && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: 0,
-                      top: '100%',
-                      marginTop: '6px',
-                      width: '270px',
-                      background: '#ffffff',
-                      borderRadius: '16px',
-                      boxShadow: '0 20px 40px rgba(15, 23, 42, 0.18)',
-                      border: '1px solid #e2e8f0',
-                      padding: '16px',
-                      zIndex: 100,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '12px',
-                    }}
-                  >
+                  <div className="sq-profile-popover">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div
                         style={{
@@ -198,10 +167,10 @@ export function Navbar() {
                         )}
                       </div>
                       <div style={{ overflow: 'hidden', textAlign: 'left' }}>
-                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div className="sq-popover-name" style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {user.name}
                         </div>
-                        <div style={{ fontSize: '11px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div className="sq-popover-email" style={{ fontSize: '11px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {user.email}
                         </div>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', marginTop: '2px' }}>
@@ -210,7 +179,7 @@ export function Navbar() {
                       </div>
                     </div>
 
-                    <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+                    <hr style={{ border: 'none', borderTop: '1px solid rgba(148, 163, 184, 0.2)', margin: 0 }} />
 
                     <button
                       type="button"
@@ -218,13 +187,12 @@ export function Navbar() {
                         setProfileDropdownOpen(false);
                         setIsEditModalOpen(true);
                       }}
+                      className="sq-popover-edit-btn"
                       style={{
                         width: '100%',
                         padding: '10px 14px',
                         borderRadius: '10px',
                         border: '1px solid #bfdbfe',
-                        background: '#eff6ff',
-                        color: '#1d4ed8',
                         fontWeight: 700,
                         fontSize: '13px',
                         cursor: 'pointer',
@@ -241,13 +209,12 @@ export function Navbar() {
                     <button
                       type="button"
                       onClick={handleLogout}
+                      className="sq-popover-logout-btn"
                       style={{
                         width: '100%',
                         padding: '10px 14px',
                         borderRadius: '10px',
                         border: '1px solid #fee2e2',
-                        background: '#fef2f2',
-                        color: '#b91c1c',
                         fontWeight: 700,
                         fontSize: '13px',
                         cursor: 'pointer',
@@ -333,13 +300,12 @@ export function Navbar() {
                   setMobileMenuOpen(false);
                   setIsEditModalOpen(true);
                 }}
+                className="sq-popover-edit-btn"
                 style={{
                   width: '100%',
                   padding: '12px',
                   borderRadius: '8px',
                   border: '1px solid #bfdbfe',
-                  background: '#eff6ff',
-                  color: '#1d4ed8',
                   fontWeight: 700,
                   fontSize: '14px',
                   cursor: 'pointer',
@@ -349,13 +315,12 @@ export function Navbar() {
               </button>
               <button
                 onClick={handleLogout}
+                className="sq-popover-logout-btn"
                 style={{
                   width: '100%',
                   padding: '12px',
                   borderRadius: '8px',
                   border: '1px solid #ef4444',
-                  background: '#fef2f2',
-                  color: '#b91c1c',
                   fontWeight: 700,
                   fontSize: '14px',
                   cursor: 'pointer',

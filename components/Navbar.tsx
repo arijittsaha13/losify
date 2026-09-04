@@ -149,6 +149,7 @@ export function Navbar() {
                       top: '100%',
                       marginTop: '6px',
                       width: '270px',
+                      maxWidth: 'calc(100vw - 32px)',
                       background: '#ffffff',
                       borderRadius: '16px',
                       boxShadow: '0 20px 40px rgba(15, 23, 42, 0.18)',
@@ -276,7 +277,6 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Menu"
             style={{
-              display: 'none',
               background: '#f1f5f9',
               border: '1px solid #cbd5e1',
               borderRadius: '8px',
@@ -363,15 +363,13 @@ export function Navbar() {
             <div style={{ display: 'flex', gap: '10px' }}>
               <Link
                 href="/login"
+                className="sq-btn sq-btn-secondary"
                 onClick={() => setMobileMenuOpen(false)}
                 style={{
                   flex: 1,
                   textAlign: 'center',
                   padding: '12px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  background: '#ffffff',
-                  color: '#0f172a',
                   fontWeight: 700,
                   fontSize: '14px',
                   textDecoration: 'none',
@@ -381,15 +379,13 @@ export function Navbar() {
               </Link>
               <Link
                 href="/signup"
+                className="sq-btn sq-btn-primary"
                 onClick={() => setMobileMenuOpen(false)}
                 style={{
                   flex: 1,
                   textAlign: 'center',
                   padding: '12px',
                   borderRadius: '8px',
-                  border: 'none',
-                  background: '#2563eb',
-                  color: '#ffffff',
                   fontWeight: 700,
                   fontSize: '14px',
                   textDecoration: 'none',

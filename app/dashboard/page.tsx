@@ -61,8 +61,8 @@ export default function Dashboard() {
       <div className="grid four">
         {stats.map((x) => (
           <div className="glass stat" key={x[1]}>
-            <b>{x[0]}</b>
-            <span className="muted">{x[1]}</span>
+            <b className="stat-number">{x[0]}</b>
+            <span className="muted stat-label">{x[1]}</span>
           </div>
         ))}
       </div>
@@ -79,13 +79,13 @@ export default function Dashboard() {
           ) : (
             <div className="glass card" style={{ padding: '24px', textAlign: 'center' }}>
               <p className="muted">No lost items reported yet under profile <b>{user.name}</b>.</p>
-              <Link className="btn primary" href="/report/lost" prefetch={true} style={{ marginTop: 12, display: 'inline-block' }}>
+              <Link className="btn btn-glass" href="/report/lost" prefetch={true} style={{ marginTop: 12, display: 'inline-block' }}>
                 + Report a lost item
               </Link>
             </div>
           )}
           {myLostItems.length > 0 && (
-            <Link className="btn" href="/report/lost" prefetch={true} style={{ marginTop: 14, display: 'inline-block' }}>
+            <Link className="btn btn-glass" href="/report/lost" prefetch={true} style={{ marginTop: 14, display: 'inline-block' }}>
               + Report another lost item
             </Link>
           )}
@@ -101,7 +101,7 @@ export default function Dashboard() {
             <div className="progress" style={{ marginTop: 12 }}>
               <i style={{ width: globalStats.accuracy }} />
             </div>
-            <Link className="btn" href="/report/found" prefetch={true} style={{ marginTop: 18, display: 'inline-block' }}>
+            <Link className="btn btn-glass" href="/report/found" prefetch={true} style={{ marginTop: 18, display: 'inline-block' }}>
               + Report a Found Item
             </Link>
           </div>

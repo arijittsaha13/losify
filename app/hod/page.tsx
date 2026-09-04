@@ -132,8 +132,8 @@ export default function Hod() {
       <div className="grid four" style={{ marginTop: 15 }}>
         {stats.map((x) => (
           <div className="glass stat" key={x[1]}>
-            <b>{x[0]}</b>
-            <span className="muted">{x[1]}</span>
+            <b className="stat-number">{x[0]}</b>
+            <span className="muted stat-label">{x[1]}</span>
           </div>
         ))}
       </div>

@@ -216,9 +216,9 @@ export function completeGoogleRegistration(data: {
   const existing = existingIndex >= 0 ? users[existingIndex] : null;
 
   // Preserve user's permanently saved custom profile attributes (registerId, phone, department, course, avatar)
-  const finalRegisterId = (existing?.registerId && !existing.registerId.startsWith('GOOG-'))
+  const finalRegisterId = (existing?.registerId && existing.registerId.trim().length > 0)
     ? existing.registerId
-    : (data.registerId.trim() || existing?.registerId || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`));
+    : (data.registerId.trim() || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`));
 
   const updatedUser: User = {
     ...existing,

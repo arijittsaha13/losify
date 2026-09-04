@@ -106,54 +106,13 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(8px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}
-    >
-      <div
-        style={{
-          background: 'var(--card-bg, #ffffff)',
-          borderRadius: '24px',
-          border: '1px solid var(--card-border, #e2e8f0)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
-          maxWidth: '540px',
-          width: '100%',
-          maxHeight: '94vh',
-          overflowY: 'auto',
-          padding: '28px 32px',
-          color: 'var(--text-main, #0f172a)',
-          position: 'relative',
-        }}
-      >
+    <div className="sq-modal-overlay">
+      <div className="sq-modal-card">
         {/* Close Button */}
         <button
           onClick={onClose}
           type="button"
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            background: 'var(--card-sub-bg, #f1f5f9)',
-            border: '1px solid var(--card-border, transparent)',
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: 'var(--text-sub, #64748b)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="sq-modal-close-btn"
           aria-label="Close"
         >
           ✕
@@ -161,10 +120,10 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
         {/* Modal Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 6px 0' }}>
+          <h2 className="sq-modal-title">
             Edit Profile
           </h2>
-          <p style={{ fontSize: '13px', color: 'var(--text-sub, #64748b)', margin: 0 }}>
+          <p className="sq-modal-subtext">
             Update your personal details, campus register ID and photo.
           </p>
         </div>
@@ -256,7 +215,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
           {/* Full Name */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label className="sq-modal-label">
               Full Name
             </label>
             <input
@@ -265,23 +224,13 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Arijit Saha"
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                border: '1px solid var(--card-border, #cbd5e1)',
-                background: 'var(--card-sub-bg, #ffffff)',
-                fontSize: '14px',
-                outline: 'none',
-                fontWeight: 600,
-                color: 'var(--text-main, #0f172a)',
-              }}
+              className="sq-modal-input"
             />
           </div>
 
           {/* Register No */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label className="sq-modal-label">
               Register / Roll Number
             </label>
             <input
@@ -290,23 +239,13 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
               value={registerId}
               onChange={(e) => setRegisterId(e.target.value)}
               placeholder="e.g. STU-2026104"
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                border: '1px solid var(--card-border, #cbd5e1)',
-                background: 'var(--card-sub-bg, #ffffff)',
-                fontSize: '14px',
-                outline: 'none',
-                fontWeight: 600,
-                color: 'var(--text-main, #0f172a)',
-              }}
+              className="sq-modal-input"
             />
           </div>
 
           {/* Phone Number */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label className="sq-modal-label">
               Phone Number
             </label>
             <input
@@ -314,43 +253,23 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="e.g. +91 98765 43210"
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                border: '1px solid var(--card-border, #cbd5e1)',
-                background: 'var(--card-sub-bg, #ffffff)',
-                fontSize: '14px',
-                outline: 'none',
-                fontWeight: 600,
-                color: 'var(--text-main, #0f172a)',
-              }}
+              className="sq-modal-input"
             />
           </div>
 
           {/* Department & Course Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+              <label className="sq-modal-label">
                 Department
               </label>
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 12px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--card-border, #cbd5e1)',
-                  fontSize: '13px',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: 'var(--text-main, #0f172a)',
-                  background: 'var(--card-sub-bg, #ffffff)',
-                }}
+                className="sq-modal-select"
               >
                 {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept} style={{ background: 'var(--card-bg, #ffffff)', color: 'var(--text-main, #0f172a)' }}>
+                  <option key={dept} value={dept}>
                     {dept}
                   </option>
                 ))}
@@ -358,26 +277,16 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
             </div>
 
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+              <label className="sq-modal-label">
                 Course / Program
               </label>
               <select
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 12px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--card-border, #cbd5e1)',
-                  fontSize: '13px',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: 'var(--text-main, #0f172a)',
-                  background: 'var(--card-sub-bg, #ffffff)',
-                }}
+                className="sq-modal-select"
               >
                 {COURSES.map((c) => (
-                  <option key={c} value={c} style={{ background: 'var(--card-bg, #ffffff)', color: 'var(--text-main, #0f172a)' }}>
+                  <option key={c} value={c}>
                     {c}
                   </option>
                 ))}
@@ -390,17 +299,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
             <button
               type="button"
               onClick={onClose}
-              style={{
-                flex: 1,
-                padding: '12px',
-                borderRadius: '10px',
-                border: '1px solid var(--card-border, #cbd5e1)',
-                background: 'var(--card-sub-bg, #ffffff)',
-                color: 'var(--text-sub, #64748b)',
-                fontWeight: 700,
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
+              className="sq-modal-btn-cancel"
             >
               Cancel
             </button>

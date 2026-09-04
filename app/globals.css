@@ -105,7 +105,7 @@ html[data-theme="dark"] ::placeholder {
   color: #9ca3af !important;
 }
 
-/* Navbar text links (No background box/square around text) */
+/* Navbar Menu Links (Unified transparent link styling like Live Dashboard) */
 html[data-theme="dark"] .sq-menu-link,
 html[data-theme="dark"] .sq-menu-list a {
   color: #cbd5e1 !important;
@@ -113,7 +113,6 @@ html[data-theme="dark"] .sq-menu-list a {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
 }
 
 html[data-theme="dark"] .sq-menu-link:hover,
@@ -125,13 +124,7 @@ html[data-theme="dark"] .sq-menu-list a:hover {
   box-shadow: none !important;
 }
 
-/* Log In & Sign Up buttons (Sleek black buttons in dark mode) */
-html[data-theme="dark"] .sq-nav-login-link,
-html[data-theme="dark"] .sq-nav-signup-btn,
-html[data-theme="dark"] .sq-btn-primary,
-html[data-theme="dark"] .sq-btn-secondary,
-html[data-theme="dark"] a[href="/signup"],
-html[data-theme="dark"] a[href="/login"],
+/* Form Submit & Standalone Primary Action Buttons (Black buttons in dark mode) */
 html[data-theme="dark"] button[type="submit"],
 html[data-theme="dark"] .btn.primary {
   background-color: #000000 !important;
@@ -141,12 +134,6 @@ html[data-theme="dark"] .btn.primary {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
 }
 
-html[data-theme="dark"] .sq-nav-login-link:hover,
-html[data-theme="dark"] .sq-nav-signup-btn:hover,
-html[data-theme="dark"] .sq-btn-primary:hover,
-html[data-theme="dark"] .sq-btn-secondary:hover,
-html[data-theme="dark"] a[href="/signup"]:hover,
-html[data-theme="dark"] a[href="/login"]:hover,
 html[data-theme="dark"] button[type="submit"]:hover,
 html[data-theme="dark"] .btn.primary:hover {
   background-color: #121824 !important;

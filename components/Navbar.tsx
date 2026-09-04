@@ -259,11 +259,11 @@ export function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="sq-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Link href="/login" className="sq-nav-login-link">
+            <div className="sq-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Link href="/login" className="sq-menu-link">
                 Log In
               </Link>
-              <Link href="/signup" className="sq-nav-signup-btn">
+              <Link href="/signup" className="sq-menu-link">
                 Sign Up
               </Link>
             </div>
@@ -363,7 +363,7 @@ export function Navbar() {
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <Link
                 href="/login"
-                className="sq-nav-login-link"
+                className="sq-menu-link"
                 onClick={() => setMobileMenuOpen(false)}
                 style={{ flex: 1, textAlign: 'center', justifyContent: 'center' }}
               >
@@ -371,9 +371,9 @@ export function Navbar() {
               </Link>
               <Link
                 href="/signup"
-                className="sq-nav-signup-btn"
+                className="sq-menu-link"
                 onClick={() => setMobileMenuOpen(false)}
-                style={{ flex: 1, textAlign: 'center' }}
+                style={{ flex: 1, textAlign: 'center', justifyContent: 'center' }}
               >
                 Sign Up
               </Link>

@@ -184,16 +184,16 @@ export function smartClassifyItem(imageData: string, fileName: string = ''): Ite
     description = 'Academic study textbook / notebook.';
   } else {
     // Dynamic fallback from filename
-    const words = cleanName.split(/\s+/).filter(w => w.length > 2 && !['jpg', 'jpeg', 'png', 'webp', 'img', 'photo', 'screenshot', 'image', '8k', '4k', '7680x4320'].includes(w));
+    const words = cleanName.split(/\s+/).filter(w => w.length > 2 && !['jpg', 'jpeg', 'png', 'webp', 'img', 'photo', 'screenshot', 'image', '8k', '4k', '7680x4320', 'download', 'camera'].includes(w));
     if (words.length > 0) {
       name = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     } else {
-      name = 'Found Item';
+      name = '';
     }
     category = 'Other';
     brand = '';
     color = '';
-    description = 'Item photo uploaded. Please verify and fill in details.';
+    description = '';
   }
 
   // Detect colors in filename
@@ -208,9 +208,9 @@ export function smartClassifyItem(imageData: string, fileName: string = ''): Ite
   const finalName = cleanItemName(name, color, brand);
 
   return {
-    title: finalName || 'Found Item',
-    name: finalName || 'Found Item',
-    itemType: finalName || 'Found Item',
+    title: finalName,
+    name: finalName,
+    itemType: finalName,
     category,
     brand,
     color,
@@ -319,7 +319,7 @@ export async function analyzeItem(imageData: string, fileName: string = ''): Pro
       generationConfig: {
         responseMimeType: 'application/json',
         responseSchema: responseSchema,
-        maxOutputTokens: 512,
+        maxOutputTokens: 2048,
         temperature: 0.1,
       },
     };

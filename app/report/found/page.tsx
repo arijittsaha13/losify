@@ -94,11 +94,21 @@ export default function Found() {
       const hint = json as ItemAnalysis & { name?: string };
 
       // Fallback key mappings (data.name || data.title || data.itemType)
-      const rawName = hint.name || hint.title || hint.itemType || 'Found Item';
-      const rawBrand = hint.brand || 'Generic';
+      const rawName = hint.name || hint.title || hint.itemType || '';
+      const rawBrand = hint.brand || '';
       const rawColor = hint.color || '';
       const rawDescription = hint.description || '';
       const rawCategory = hint.category || 'Other';
+
+      // Check for placeholder, generic, or mismatched dummy names
+      const isDummyName =
+        !rawName ||
+        ['found item', 'lost item', 'item', 'unknown item', 'unknown', 'smart item'].includes(
+          rawName.trim().toLowerCase()
+        );
+      const isDummyBrand =
+        !rawBrand ||
+        ['generic', 'campus', 'unknown', 'none'].includes(rawBrand.trim().toLowerCase());
 
       // Exact case-sensitive match with dropdown <select> options
       const matchedCategory = cats.find(
@@ -111,10 +121,10 @@ export default function Found() {
 
       setData({
         ...hint,
-        name: rawName,
-        title: rawName,
-        itemType: rawName,
-        brand: rawBrand,
+        name: !isDummyName ? rawName.trim() : '',
+        title: !isDummyName ? rawName.trim() : '',
+        itemType: !isDummyName ? rawName.trim() : '',
+        brand: !isDummyBrand ? rawBrand.trim() : '',
         color: rawColor,
         description: rawDescription,
         category: matchedCategory,

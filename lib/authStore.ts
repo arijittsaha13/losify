@@ -67,7 +67,7 @@ export function findUserByEmail(email: string): User | null {
 export function getCurrentUser(): User | null {
   if (typeof window === 'undefined') return null;
   try {
-    const saved = sessionStorage.getItem(CURRENT_USER_KEY);
+    const saved = localStorage.getItem(CURRENT_USER_KEY) || sessionStorage.getItem(CURRENT_USER_KEY);
     if (!saved) {
       return null;
     }
@@ -97,6 +97,7 @@ export function login(email: string, pass: string, expectedRole?: 'student' | 'h
 
   const { password: _, ...userNoPass } = found;
   if (typeof window !== 'undefined') {
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -117,13 +118,15 @@ export function signup(data: {
 
   const users = initUsers();
   const existingIndex = users.findIndex((u) => u.email.toLowerCase() === trimmedEmail);
+  const existing = existingIndex >= 0 ? users[existingIndex] : null;
 
   const newUser: User & { password?: string } = {
+    ...existing,
     email: trimmedEmail,
-    name: data.name.trim() || (data.role === 'hod' ? 'HOD Administrator' : 'Student'),
-    registerId: data.registerId.trim() || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`),
-    password: data.password,
-    role: data.role || 'student',
+    name: data.name.trim() || (existing?.name ?? (data.role === 'hod' ? 'HOD Administrator' : 'Student')),
+    registerId: data.registerId.trim() || (existing?.registerId ?? (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`)),
+    password: data.password || existing?.password,
+    role: data.role || existing?.role || 'student',
   };
 
   if (existingIndex >= 0) {
@@ -135,6 +138,7 @@ export function signup(data: {
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
     const { password: _, ...userNoPass } = newUser;
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
     window.dispatchEvent(new Event('authChange'));
     return userNoPass;
@@ -158,7 +162,6 @@ export function loginWithFirebaseUser(
 
   if (existingUserIndex >= 0) {
     const existing = users[existingUserIndex];
-    // If role requested differs, update it or keep stored
     if (selectedRole && existing.role !== selectedRole) {
       existing.role = selectedRole;
       users[existingUserIndex] = existing;
@@ -168,6 +171,7 @@ export function loginWithFirebaseUser(
     }
     const { password: _, ...userNoPass } = existing;
     if (typeof window !== 'undefined') {
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
       sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userNoPass));
       window.dispatchEvent(new Event('authChange'));
     }
@@ -192,6 +196,7 @@ export function loginWithFirebaseUser(
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -208,22 +213,34 @@ export function completeGoogleRegistration(data: {
   const trimmedEmail = data.email.trim().toLowerCase();
   const users = initUsers();
   const existingIndex = users.findIndex((u) => u.email.toLowerCase() === trimmedEmail);
+  const existing = existingIndex >= 0 ? users[existingIndex] : null;
+
+  // Preserve user's permanently saved custom profile attributes (registerId, phone, department, course, avatar)
+  const finalRegisterId = (existing?.registerId && !existing.registerId.startsWith('GOOG-'))
+    ? existing.registerId
+    : (data.registerId.trim() || existing?.registerId || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`));
 
   const updatedUser: User = {
+    ...existing,
     email: trimmedEmail,
-    name: data.name.trim() || (data.role === 'hod' ? 'HOD Admin' : 'Student'),
-    registerId: data.registerId.trim() || (data.role === 'hod' ? `HOD-${Math.floor(100 + Math.random() * 900)}` : `STU-${Math.floor(100000 + Math.random() * 900000)}`),
-    role: data.role,
+    name: (existing?.name && existing.name !== 'Google User' && existing.name !== 'Student') ? existing.name : (data.name.trim() || 'Student'),
+    registerId: finalRegisterId,
+    role: existing?.role || data.role,
+    phone: existing?.phone || undefined,
+    department: existing?.department || undefined,
+    course: existing?.course || undefined,
+    avatar: existing?.avatar || undefined,
   };
 
   if (existingIndex >= 0) {
-    users[existingIndex] = { ...users[existingIndex], ...updatedUser };
+    users[existingIndex] = updatedUser;
   } else {
     users.push(updatedUser);
   }
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -235,23 +252,28 @@ export function updateUserProfile(updates: Partial<Omit<User, 'email' | 'role'>>
   const current = getCurrentUser();
   if (!current) throw new Error('No user is currently logged in.');
 
-  const updatedUser: User = {
-    ...current,
-    ...updates,
-    name: updates.name ? updates.name.trim() : current.name,
-    registerId: updates.registerId ? updates.registerId.trim() : current.registerId,
-  };
-
   const users = initUsers();
   const index = users.findIndex((u) => u.email.toLowerCase() === current.email.toLowerCase());
+  
+  const existingInList = index >= 0 ? users[index] : undefined;
+
+  const updatedUser: User = {
+    ...(existingInList || {}),
+    ...current,
+    ...updates,
+    name: updates.name ? updates.name.trim() : (current.name || existingInList?.name || 'Student'),
+    registerId: updates.registerId ? updates.registerId.trim() : (current.registerId || existingInList?.registerId || 'STU-000'),
+  };
+
   if (index >= 0) {
-    users[index] = { ...users[index], ...updatedUser };
+    users[index] = updatedUser;
   } else {
     users.push(updatedUser);
   }
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     window.dispatchEvent(new Event('authChange'));
   }
@@ -262,6 +284,7 @@ export function updateUserProfile(updates: Partial<Omit<User, 'email' | 'role'>>
 export function logout() {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem(CURRENT_USER_KEY);
+    localStorage.removeItem(CURRENT_USER_KEY);
     window.dispatchEvent(new Event('authChange'));
   }
 }

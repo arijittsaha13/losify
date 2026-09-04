@@ -121,33 +121,35 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
     >
       <div
         style={{
-          background: '#ffffff',
+          background: 'var(--card-bg, #ffffff)',
           borderRadius: '24px',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)',
+          border: '1px solid var(--card-border, #e2e8f0)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
           maxWidth: '540px',
           width: '100%',
           maxHeight: '94vh',
           overflowY: 'auto',
           padding: '28px 32px',
-          color: '#0f172a',
+          color: 'var(--text-main, #0f172a)',
           position: 'relative',
         }}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
+          type="button"
           style={{
             position: 'absolute',
             top: '20px',
             right: '20px',
-            background: '#f1f5f9',
-            border: 'none',
+            background: 'var(--card-sub-bg, #f1f5f9)',
+            border: '1px solid var(--card-border, transparent)',
             borderRadius: '50%',
             width: '36px',
             height: '36px',
             cursor: 'pointer',
             fontSize: '18px',
-            color: '#64748b',
+            color: 'var(--text-sub, #64748b)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -159,10 +161,10 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
         {/* Modal Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 6px 0' }}>
             Edit Profile
           </h2>
-          <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-sub, #64748b)', margin: 0 }}>
             Update your personal details, campus register ID and photo.
           </p>
         </div>
@@ -196,7 +198,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 fontWeight: 800,
                 overflow: 'hidden',
                 boxShadow: '0 8px 20px rgba(37, 99, 235, 0.3)',
-                border: '3px solid #ffffff',
+                border: '3px solid var(--card-bg, #ffffff)',
               }}
             >
               {avatar ? (
@@ -219,9 +221,9 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  background: '#eff6ff',
-                  color: '#2563eb',
-                  border: '1px solid #bfdbfe',
+                  background: 'var(--card-sub-bg, #eff6ff)',
+                  color: 'var(--sq-accent-blue, #2563eb)',
+                  border: '1px solid var(--card-border, #bfdbfe)',
                   padding: '6px 14px',
                   borderRadius: '99px',
                   fontSize: '12px',
@@ -254,7 +256,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
 
           {/* Full Name */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
               Full Name
             </label>
             <input
@@ -267,18 +269,19 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 width: '100%',
                 padding: '12px 14px',
                 borderRadius: '10px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid var(--card-border, #cbd5e1)',
+                background: 'var(--card-sub-bg, #ffffff)',
                 fontSize: '14px',
                 outline: 'none',
                 fontWeight: 600,
-                color: '#0f172a',
+                color: 'var(--text-main, #0f172a)',
               }}
             />
           </div>
 
           {/* Register No */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
               Register / Roll Number
             </label>
             <input
@@ -291,18 +294,19 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 width: '100%',
                 padding: '12px 14px',
                 borderRadius: '10px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid var(--card-border, #cbd5e1)',
+                background: 'var(--card-sub-bg, #ffffff)',
                 fontSize: '14px',
                 outline: 'none',
                 fontWeight: 600,
-                color: '#0f172a',
+                color: 'var(--text-main, #0f172a)',
               }}
             />
           </div>
 
           {/* Phone Number */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
               Phone Number
             </label>
             <input
@@ -314,11 +318,12 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 width: '100%',
                 padding: '12px 14px',
                 borderRadius: '10px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid var(--card-border, #cbd5e1)',
+                background: 'var(--card-sub-bg, #ffffff)',
                 fontSize: '14px',
                 outline: 'none',
                 fontWeight: 600,
-                color: '#0f172a',
+                color: 'var(--text-main, #0f172a)',
               }}
             />
           </div>
@@ -326,7 +331,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
           {/* Department & Course Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
                 Department
               </label>
               <select
@@ -336,16 +341,16 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                   width: '100%',
                   padding: '12px 12px',
                   borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid var(--card-border, #cbd5e1)',
                   fontSize: '13px',
                   outline: 'none',
                   fontWeight: 600,
-                  color: '#0f172a',
-                  background: '#ffffff',
+                  color: 'var(--text-main, #0f172a)',
+                  background: 'var(--card-sub-bg, #ffffff)',
                 }}
               >
                 {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept}>
+                  <option key={dept} value={dept} style={{ background: 'var(--card-bg, #ffffff)', color: 'var(--text-main, #0f172a)' }}>
                     {dept}
                   </option>
                 ))}
@@ -353,7 +358,7 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
             </div>
 
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-sub, #475569)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
                 Course / Program
               </label>
               <select
@@ -363,16 +368,16 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                   width: '100%',
                   padding: '12px 12px',
                   borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid var(--card-border, #cbd5e1)',
                   fontSize: '13px',
                   outline: 'none',
                   fontWeight: 600,
-                  color: '#0f172a',
-                  background: '#ffffff',
+                  color: 'var(--text-main, #0f172a)',
+                  background: 'var(--card-sub-bg, #ffffff)',
                 }}
               >
                 {COURSES.map((c) => (
-                  <option key={c} value={c}>
+                  <option key={c} value={c} style={{ background: 'var(--card-bg, #ffffff)', color: 'var(--text-main, #0f172a)' }}>
                     {c}
                   </option>
                 ))}
@@ -389,9 +394,9 @@ export function EditProfileModal({ isOpen, onClose, user }: EditProfileModalProp
                 flex: 1,
                 padding: '12px',
                 borderRadius: '10px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                color: '#64748b',
+                border: '1px solid var(--card-border, #cbd5e1)',
+                background: 'var(--card-sub-bg, #ffffff)',
+                color: 'var(--text-sub, #64748b)',
                 fontWeight: 700,
                 fontSize: '14px',
                 cursor: 'pointer',

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { login, completeGoogleRegistration, isGmailAddress } from '../../lib/authStore';
 import { auth, googleProvider, signInWithPopup } from '../../lib/firebase';
-import { GoogleAuthModal } from '../../components/GoogleAuthModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
-  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   const handleRoleSwitch = (role: 'student' | 'hod') => {
     setActiveRole(role);
@@ -49,51 +47,41 @@ export default function LoginPage() {
   const handleGoogleLoginClick = async () => {
     setError(undefined);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-      if (apiKey && apiKey !== 'AIzaSyCampusLosifyAuthDemo2026Key99') {
-        const result = await signInWithPopup(auth, googleProvider);
-        const googleUser = result.user;
-        const userEmail = googleUser.email || '';
-        const userName = googleUser.displayName || userEmail.split('@')[0] || 'User';
+      const result = await signInWithPopup(auth, googleProvider);
+      const googleUser = result.user;
+      const userEmail = googleUser.email || '';
+      const userName = googleUser.displayName || userEmail.split('@')[0] || 'User';
 
-        if (!isGmailAddress(userEmail)) {
-          setError('Access denied: Only valid @gmail.com email addresses are allowed.');
-          return;
-        }
-
-        const user = completeGoogleRegistration({
-          email: userEmail,
-          name: userName,
-          registerId: `GOOG-${googleUser.uid.substring(0, 8)}`,
-          role: activeRole,
-        });
-
-        startTransition(() => {
-          if (user.role === 'hod') {
-            router.push('/hod');
-          } else {
-            router.push('/dashboard');
-          }
-        });
+      if (!isGmailAddress(userEmail)) {
+        setError('Access denied: Only valid @gmail.com email addresses are allowed.');
         return;
       }
-    } catch (err: unknown) {
-      console.warn('Firebase popup unavailable, opening Google Accounts UI Modal:', err);
-    }
-    // Directly open Google Accounts UI Interface Modal (never show red Firebase error)
-    setError(undefined);
-    setIsGoogleModalOpen(true);
-  };
 
-  const handleGoogleAuthComplete = (userData: { email: string; name: string; registerId: string; role: 'student' | 'hod' }) => {
-    setIsGoogleModalOpen(false);
-    startTransition(() => {
-      if (userData.role === 'hod') {
-        router.push('/hod');
-      } else {
-        router.push('/dashboard');
+      const user = completeGoogleRegistration({
+        email: userEmail,
+        name: userName,
+        registerId: `GOOG-${googleUser.uid.substring(0, 8)}`,
+        role: activeRole,
+      });
+
+      startTransition(() => {
+        if (user.role === 'hod') {
+          router.push('/hod');
+        } else {
+          router.push('/dashboard');
+        }
+      });
+    } catch (err: unknown) {
+      console.error('Google OAuth error:', err);
+      if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/popup-closed-by-user') {
+        return;
       }
-    });
+      if (err && typeof err === 'object' && 'code' in err && err.code === 'auth/api-key-not-valid') {
+        setError('Firebase Google OAuth setup required: Please configure your live NEXT_PUBLIC_FIREBASE_API_KEY environment variable in Vercel.');
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
+    }
   };
 
   return (
@@ -275,13 +263,6 @@ export default function LoginPage() {
           NEED AN ACCOUNT? SIGN UP HERE
         </Link>
       </main>
-
-      <GoogleAuthModal
-        isOpen={isGoogleModalOpen}
-        onClose={() => setIsGoogleModalOpen(false)}
-        onComplete={handleGoogleAuthComplete}
-        initialRole={activeRole}
-      />
     </div>
   );
 }

@@ -1,18 +1,25 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { getLostItems, getFoundItems, getMatchedPairs, getGlobalStats, markMatchCollected, type Item, type MatchPair } from '../../lib/itemsStore';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { getLostItems, getFoundItems, getMatchedPairs, getGlobalStats, getAnalyticsData, markMatchCollected, type Item, type MatchPair } from '../../lib/itemsStore';
 import { getCurrentUser, login, type User } from '../../lib/authStore';
+import { AdminAnalyticsDashboard } from '../../components/AdminAnalyticsDashboard';
+import { StatusTimeline } from '../../components/StatusTimeline';
 
 export default function Hod() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [lostItems, setLostItems] = useState<Item[]>([]);
   const [foundItems, setFoundItems] = useState<Item[]>([]);
   const [pairs, setPairs] = useState<MatchPair[]>([]);
   const [globalStats, setGlobalStats] = useState({ totalLost: 0, totalFound: 0, totalMatches: 0, accuracy: '100%' });
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [search, setSearch] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState<string>();
+  const [showAnalyticsTab, setShowAnalyticsTab] = useState(true);
 
   const loadData = () => {
     const u = getCurrentUser();
@@ -22,6 +29,7 @@ export default function Hod() {
       setFoundItems(getFoundItems());
       setPairs(getMatchedPairs());
       setGlobalStats(getGlobalStats());
+      setAnalyticsData(getAnalyticsData());
     }
   };
 
@@ -50,6 +58,21 @@ export default function Hod() {
     markMatchCollected(pairId);
     loadData();
   };
+
+  if (user && user.role === 'student') {
+    return (
+      <main className="form glass" style={{ maxWidth: 480, margin: '40px auto', textAlign: 'center' }}>
+        <span className="label" style={{ color: '#2563eb' }}>STUDENT PROFILE ACTIVE</span>
+        <h1>Campus Student Portal</h1>
+        <p className="muted">
+          You are currently logged in as a <b>Student ({user.name})</b>. HOD Desk features are strictly reserved for campus administration.
+        </p>
+        <Link className="btn primary full" href="/dashboard" style={{ marginTop: 16 }}>
+          Return to Student Hub →
+        </Link>
+      </main>
+    );
+  }
 
   if (!user || user.role !== 'hod') {
     return (
@@ -122,14 +145,31 @@ export default function Hod() {
           <span className="label">HOD CONTROL CENTER · AUTHENTICATED</span>
           <h1>Campus collection desk</h1>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button
+            onClick={() => setShowAnalyticsTab(!showAnalyticsTab)}
+            className="btn"
+            style={{
+              padding: '6px 14px',
+              fontSize: '12px',
+              background: showAnalyticsTab ? '#2563eb' : 'rgba(255,255,255,0.7)',
+              color: showAnalyticsTab ? '#ffffff' : '#0f172a',
+            }}
+          >
+            {showAnalyticsTab ? 'Hide Analytics' : 'Show Admin Analytics'}
+          </button>
           <span className="pill" style={{ background: '#1479dc', color: '#fff' }}>
             HOD: {user.name} ({user.registerId})
           </span>
         </div>
       </div>
 
-      <div className="grid four" style={{ marginTop: 15 }}>
+      {/* Admin Analytics Dashboard Component */}
+      {showAnalyticsTab && analyticsData && (
+        <AdminAnalyticsDashboard data={analyticsData} />
+      )}
+
+      <div className="grid four" style={{ marginTop: 20 }}>
         {stats.map((x) => (
           <div className="glass stat" key={x[1]}>
             <b className="stat-number">{x[0]}</b>
@@ -140,7 +180,7 @@ export default function Hod() {
 
       <div className="glass card" style={{ marginTop: 20 }}>
         <div className="actions" style={{ justifyContent: 'space-between' }}>
-          <h2>Pending collections</h2>
+          <h2>Pending collections & Claims</h2>
           <input
             style={{ maxWidth: 220 }}
             placeholder="Search student or item..."
@@ -154,8 +194,8 @@ export default function Hod() {
               <tr>
                 <th>Item</th>
                 <th>Student (Claimant)</th>
+                <th>Timeline Progress</th>
                 <th>AI match</th>
-                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -181,17 +221,25 @@ export default function Hod() {
                       <br />
                       <span className="muted">{pair.studentId}</span>
                     </td>
-                    <td>
-                      <span className="pill">{pair.confidence}% strong</span>
+                    <td style={{ minWidth: '180px' }}>
+                      <StatusTimeline
+                        status={pair.collected ? 'COLLECTED' : 'READY_FOR_COLLECTION'}
+                        confidence={pair.confidence}
+                        compact={true}
+                      />
                     </td>
-                    <td>{pair.collected ? 'COLLECTED' : 'READY FOR COLLECTION'}</td>
+                    <td>
+                      <span className="pill">{pair.confidence}% match</span>
+                    </td>
                     <td>
                       {!pair.collected ? (
                         <button onClick={() => handleCollect(pair.id)} className="btn primary">
                           Mark collected
                         </button>
                       ) : (
-                        <span className="pill">Complete</span>
+                        <span className="pill" style={{ background: '#dcfce7', color: '#15803d' }}>
+                          ✓ Complete
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -207,14 +255,17 @@ export default function Hod() {
           <h2>Recent lost reports</h2>
           {lostItems.length > 0 ? (
             lostItems.map((x) => (
-              <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
-                <span>
-                  <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
-                  <br />
-                  <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
-                </span>
-                <span className="pill">{x.status}</span>
-              </p>
+              <div key={x.id} style={{ margin: '12px 0', padding: '12px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
+                    <br />
+                    <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
+                  </span>
+                  <span className="pill">{x.status}</span>
+                </div>
+                <StatusTimeline status={x.status} confidence={x.confidence} compact={true} />
+              </div>
             ))
           ) : (
             <p className="muted" style={{ padding: '12px 0' }}>No lost reports submitted yet.</p>
@@ -224,14 +275,17 @@ export default function Hod() {
           <h2>Recent found reports</h2>
           {foundItems.length > 0 ? (
             foundItems.map((x) => (
-              <p key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
-                <span>
-                  <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
-                  <br />
-                  <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
-                </span>
-                <span className="pill">{x.status}</span>
-              </p>
+              <div key={x.id} style={{ margin: '12px 0', padding: '12px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    <b>{x.name}</b> <span className="muted" style={{ fontSize: '0.85em', marginLeft: 6 }}>({x.location})</span>
+                    <br />
+                    <span className="muted" style={{ fontSize: '0.78em' }}>By: {x.studentName || 'Student'} ({x.studentId || 'N/A'})</span>
+                  </span>
+                  <span className="pill">{x.status}</span>
+                </div>
+                <StatusTimeline status={x.status} confidence={x.confidence} compact={true} />
+              </div>
             ))
           ) : (
             <p className="muted" style={{ padding: '12px 0' }}>No found reports submitted yet.</p>
@@ -240,4 +294,4 @@ export default function Hod() {
       </div>
     </main>
   );
-}
+}

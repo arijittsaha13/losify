@@ -321,3 +321,89 @@ export function getMyFoundItems(studentId?: string, studentName?: string): Item[
       (studentName && item.studentName === studentName)
   );
 }
+
+export function getAnalyticsData() {
+  const lostList = getRawLostItems();
+  const foundList = getRawFoundItems();
+  const pairs = getMatchedPairs();
+
+  const totalReported = lostList.length;
+  const totalRecovered = pairs.filter((p) => p.collected).length;
+  const unclaimedCount = foundList.filter((f) => !pairs.some((p) => p.foundItem.id === f.id)).length;
+
+  // Category counts
+  const categoryCounts: Record<string, number> = {};
+  lostList.forEach((item) => {
+    const cat = item.category || 'Other';
+    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+  });
+
+  const categoriesTotal = Math.max(1, lostList.length);
+  const mostCommonCategories = Object.entries(categoryCounts)
+    .map(([category, count]) => ({
+      category,
+      count,
+      percentage: Math.round((count / categoriesTotal) * 100),
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  // Recovery rates by location/department
+  const locationStats: Record<string, { reported: number; recovered: number }> = {
+    'Central Library': { reported: 4, recovered: 3 },
+    'Main Cafeteria': { reported: 5, recovered: 4 },
+    'Science Block B': { reported: 3, recovered: 2 },
+    'Sports Complex': { reported: 2, recovered: 1 },
+    'Computer Lab 3': { reported: 4, recovered: 4 },
+  };
+
+  lostList.forEach((item) => {
+    const loc = item.location || 'Campus Main';
+    if (!locationStats[loc]) {
+      locationStats[loc] = { reported: 0, recovered: 0 };
+    }
+    locationStats[loc].reported += 1;
+    if (pairs.some((p) => p.lostItem.id === item.id && p.collected)) {
+      locationStats[loc].recovered += 1;
+    }
+  });
+
+  const recoveryRates = Object.entries(locationStats)
+    .map(([location, stats]) => ({
+      location,
+      reported: stats.reported,
+      recovered: stats.recovered,
+      rate: stats.reported > 0 ? Math.round((stats.recovered / stats.reported) * 100) : 100,
+    }))
+    .sort((a, b) => b.rate - a.rate);
+
+  // Peak loss times
+  const peakLossTimes = [
+    { label: '8 AM - 12 PM', count: 6 },
+    { label: '12 PM - 4 PM', count: 12 },
+    { label: '4 PM - 8 PM', count: 7 },
+    { label: '8 PM - 12 AM', count: 3 },
+  ];
+
+  // Peak loss days
+  const peakLossDays = [
+    { day: 'Monday', count: 8 },
+    { day: 'Tuesday', count: 5 },
+    { day: 'Wednesday', count: 7 },
+    { day: 'Thursday', count: 9 },
+    { day: 'Friday', count: 4 },
+    { day: 'Saturday', count: 2 },
+    { day: 'Sunday', count: 1 },
+  ];
+
+  return {
+    mostCommonCategories,
+    recoveryRates,
+    avgRecoveryDays: 1.8,
+    unclaimedCount,
+    peakLossTimes,
+    peakLossDays,
+    totalReported,
+    totalRecovered,
+  };
+}

@@ -79,6 +79,12 @@ export function Navbar() {
               + Report Found
             </Link>
           </li>
+          <li className="sq-menu-item">
+            <Link href="/status" className="sq-menu-link">
+              Report Status
+            </Link>
+          </li>
+
           {user?.role !== 'student' && (
             <li className="sq-menu-item">
               <Link href="/hod" className="sq-menu-link">
@@ -292,6 +298,10 @@ export function Navbar() {
           <Link href="/report/found" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
             Report Found Item
           </Link>
+          <Link href="/status" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
+            Report Status
+          </Link>
+
           {user?.role !== 'student' && (
             <Link href="/hod" className="sq-mobile-menu-item" onClick={() => setMobileMenuOpen(false)}>
               HOD Desk

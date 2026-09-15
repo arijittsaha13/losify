@@ -69,14 +69,20 @@ export default function Dashboard() {
 
       <div className="grid two" style={{ marginTop: 22 }}>
         <section>
-          <h2>My lost items</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <h2 style={{ margin: 0 }}>My lost items</h2>
+            <Link className="btn btn-glass" href="/status" style={{ fontSize: '12px', fontWeight: 700 }}>
+              Track Report Status →
+            </Link>
+          </div>
           {myLostItems.length > 0 ? (
-            <div className="grid">
+            <div className="grid" style={{ gap: '16px' }}>
               {myLostItems.map((x) => (
-                <ItemCard key={x.id} item={x} />
+                <ItemCard key={x.id} item={x} defaultExpanded={true} />
               ))}
             </div>
           ) : (
+
             <div className="glass card" style={{ padding: '24px', textAlign: 'center' }}>
               <p className="muted">No lost items reported yet under profile <b>{user.name}</b>.</p>
               <Link className="btn btn-glass" href="/report/lost" prefetch={true} style={{ marginTop: 12, display: 'inline-block' }}>
